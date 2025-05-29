@@ -53,7 +53,10 @@
     packages = forAllSystems (
       system: let
         pkgs = import nixpkgs {inherit system;};
-      in {genhash = import ./modules/pbkdf2-sha512.nix {inherit pkgs;};}
+      in {
+        genhash = import ./modules/pbkdf2-sha512.nix {inherit pkgs;};
+        mkJellyfinPlugin = import ./plugins/default.nix {inherit pkgs;};
+      }
     );
 
     devShell = forAllSystems (
