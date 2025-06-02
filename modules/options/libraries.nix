@@ -84,189 +84,189 @@ with lib; let
     ...
   }: {
     options = with lib; {
-      Enabled = mkOption {
+      enabled = mkOption {
         type = types.bool;
         default = true;
         description = "Whether or not this library is enabled";
       };
-      ContentType = mkOption {
+      contentType = mkOption {
         type = types.enum ["movies" "music" "tvshows" "books" "homevideos" "musicvideos" "boxsets"];
         description = ''
           The type of content this library contains. Used for setting the default image/metadata fetchers.
         '';
       };
-      EnablePhotos = mkOption {
+      enablePhotos = mkOption {
         type = types.bool;
         default = true;
         description = "Whether or not media in this library should display photos";
       };
-      EnableRealtimeMonitor = mkOption {
+      enableRealtimeMonitor = mkOption {
         type = types.bool;
         default = true;
         description = "Toggles if the admin dashboard should show media being streamed from this library";
       };
-      EnableLUFSScan = mkOption {
+      enableLUFSScan = mkOption {
         type = types.bool;
         default = true;
         # TODO: Figure out what this option does
         # description = "";
       };
-      EnableChapterImageExtraction = mkOption {
+      enableChapterImageExtraction = mkOption {
         type = types.bool;
         default = false;
         description = "Whether or not to extract frames from the media to show as previews for chapters";
       };
-      ExtractChapterImagesDuringLibraryScan = mkOption {
+      extractChapterImagesDuringLibraryScan = mkOption {
         type = types.bool;
         default = false;
         description = "Whether or not to extract frames for previews for chapters during library scans";
       };
-      EnableTrickplayImageExtraction = mkOption {
+      enableTrickplayImageExtraction = mkOption {
         type = types.bool;
         default = false;
         description = "Enables trickplay image generation for previews when skipping in media";
       };
-      ExtractTrickplayImagesDuringLibraryScan = mkOption {
+      extractTrickplayImagesDuringLibraryScan = mkOption {
         type = types.bool;
         default = false;
         description = "Whether or not trickplay images should be extracted during the library scan";
       };
-      SaveTrickplayWithMedia = mkOption {
+      saveTrickplayWithMedia = mkOption {
         type = types.bool;
         default = false;
         description = "Saving trickplay images into media folders will put them next to your media for easy migration and access";
       };
-      SaveLyricsWithMedia = mkOption {
+      saveLyricsWithMedia = mkOption {
         type = types.bool;
         default = false;
         description = "Saving lyrics into media folders will put them next to your media for easy migration and access";
       };
-      PathInfos = mkOption {
+      pathInfos = mkOption {
         type = with types; listOf str;
         description = "List of paths for media in this library";
       };
-      SaveLocalMetadata = mkOption {
+      saveLocalMetadata = mkOption {
         type = types.bool;
         default = false;
         # TODO: Figure out what this option does
         # description = "";
       };
-      EnableAutomaticSeriesGrouping = mkOption {
+      enableAutomaticSeriesGrouping = mkOption {
         type = types.bool;
         default = false;
         description = "Series that are spread across multiple folders within this library will be automatically merged into a single series.";
       };
-      EnableEmbeddedTitles = mkOption {
+      enableEmbeddedTitles = mkOption {
         type = types.bool;
         default = false;
         description = "Whether or not to use the title embedded in the file if no internet metadata is available (if any is embedded)";
       };
-      EnableEmbeddedExtraTitles = mkOption {
+      enableEmbeddedExtraTitles = mkOption {
         type = types.bool;
         default = false;
         description = "Use the episode information from the embedded metadata if available.";
       };
-      EnableEmbeddedEpisodeInfos = mkOption {
+      enableEmbeddedEpisodeInfos = mkOption {
         type = types.bool;
         default = false;
         # TODO: Figure out what this does
         # description = "";
       };
-      AutomaticRefreshIntervalDays = mkOption {
+      automaticRefreshIntervalDays = mkOption {
         type = types.int;
         default = 30;
         description = "How often to automatically refresh metadata from the internet. (in days)";
       };
-      SeasonZeroDisplayName = mkOption {
+      seasonZeroDisplayName = mkOption {
         type = types.str;
         default = "Specials";
         description = "What title should the 'specials' season (season 0) display?";
       };
-      PreferredMetadataLanguage = mkOption {
+      preferredMetadataLanguage = mkOption {
         type = types.str;
         default = "en";
         description = "What language should metadata be fetched for? Affects titles, descriptions, etc.";
       };
-      MetadataCountryCode = mkOption {
+      metadataCountryCode = mkOption {
         type = types.str;
         default = "";
         # TODO: Figure out what this does
         # description = "idk";
       };
-      MetadataSavers = mkOption {
+      metadataSavers = mkOption {
         type = with types; listOf str;
         default = [];
         description = "Pick the file formats to use when saving your metadata.";
         example = ["Nfo"];
       };
-      DisabledLocalMetadataReaders = mkOption {
+      disabledLocalMetadataReaders = mkOption {
         type = with types; listOf str;
         default = [];
         # TODO: find out what this does
         # description = "What title should the 'specials' season (season 0) display?";
       };
-      LocalMetadataReaderOrder = mkOption {
+      localMetadataReaderOrder = mkOption {
         type = with types; listOf str;
         default = ["Nfo"];
         description = "What order should local metadata readers be prioritised";
       };
-      DisabledSubtitleFetchers = mkOption {
+      disabledSubtitleFetchers = mkOption {
         type = with types; listOf str;
         default = [];
         description = "What order should local metadata readers be prioritised";
         example = ["Open Subtitles"];
       };
-      SubtitleFetcherOrder = mkOption {
+      subtitleFetcherOrder = mkOption {
         type = with types; listOf str;
         default = ["Open Subtitles"];
         description = "Enable and rank your preferred subtitle downloaders in order of priority.";
       };
-      DisabledMediaSegmentProviders = mkOption {
+      disabledMediaSegmentProviders = mkOption {
         type = with types; listOf str;
         default = [];
         # TODO: Find out what this does
         # description = "Enable and rank your preferred subtitle downloaders in order of priority.";
       };
-      MediaSegmentProvideOrder = mkOption {
+      mediaSegmentProvideOrder = mkOption {
         type = with types; listOf str;
         default = [];
         # TODO: Find out what this does
         # description = "Enable and rank your preferred subtitle downloaders in order of priority.";
       };
-      SkipSubtitlesIfEmbeddedSubtitlesPresent = mkOption {
+      skipSubtitlesIfEmbeddedSubtitlesPresent = mkOption {
         type = types.bool;
         default = false;
         description = "Keeping text versions of subtitles will result in more efficient delivery and decrease the likelihood of video transcoding.";
       };
-      SkipSubtitlesIfAudioTrackMatches = mkOption {
+      skipSubtitlesIfAudioTrackMatches = mkOption {
         type = types.bool;
         default = false;
         description = "Uncheck this to ensure all videos have subtitles, regardless of audio language.";
       };
-      SubtitleDownloadLanguages = mkOption {
+      subtitleDownloadLanguages = mkOption {
         type = with types; listOf str;
         default = ["eng"];
       };
-      RequirePerfectSubtitleMatch = mkOption {
+      requirePerfectSubtitleMatch = mkOption {
         type = types.bool;
         default = true;
       };
-      SaveSubtitlesWithMedia = mkOption {
+      saveSubtitlesWithMedia = mkOption {
         type = types.bool;
         default = true;
         description = "Storing subtitles next to video files will allow them to be more easily managed.";
       };
 
-      DisabledLyricFetchers = mkOption {
+      disabledLyricFetchers = mkOption {
         type = with types; listOf str;
         default = [];
       };
-      LyricFetcherOrder = mkOption {
+      lyricFetcherOrder = mkOption {
         type = with types; listOf str;
         default = [];
       };
 
-      CustomTagDelimiters = mkOption {
+      customTagDelimiters = mkOption {
         type = with types; listOf str;
         default = [
           "/"
@@ -275,23 +275,23 @@ with lib; let
           "\\"
         ];
       };
-      DelimiterWhitelist = mkOption {
+      delimiterWhitelist = mkOption {
         type = with types; listOf str;
         default = [];
       };
-      AutomaticallyAddToCollection = mkOption {
+      automaticallyAddToCollection = mkOption {
         type = types.bool;
         default = false;
         description = "Toggles whether or not similar series/shows (ie. sequals or spinoffs) will be grouped in collections.";
       };
-      AllowEmbeddedSubtitles = mkOption {
+      allowEmbeddedSubtitles = mkOption {
         type = with types; enum ["AllowAll" "AllowText" "AllowImages" "AllowNone"];
         default = "AllowAll";
         description = "Disable subtitles that are packaged within media containers. Requires a full library refresh.";
       };
       # NOTE: This is an abstraction of the file contents. It will need to be transformed
       # before use.
-      TypeOptions = mkOption {
+      typeOptions = mkOption {
         type = with types; attrsOf attrs;
         default = defaultTypeOptions.${cfg.libraries."${name}".ContentType};
       };
@@ -304,10 +304,10 @@ in {
     type = with types; attrsOf (submodule LibraryOpts);
     example = {
       "Anime" = {
-        Enabled = true;
-        ContentType = "boxsets";
-        EnableTrickplayImageExtraction = true;
-        TypeOptions.Series.MetadataFetchers = ["TheTVDB" "TheMovieDb" "AniList"];
+        enabled = true;
+        contentType = "boxsets";
+        enableTrickplayImageExtraction = true;
+        typeOptions.series.metadataFetchers = ["TheTVDB" "TheMovieDb" "AniList"];
       };
     };
   };

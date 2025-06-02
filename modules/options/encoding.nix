@@ -5,22 +5,22 @@
 }:
 with lib; {
   options.services.declarative-jellyfin.encoding = {
-    EnableHardwareEncoding = mkOption {
+    enableHardwareEncoding = mkOption {
       type = types.bool;
       default = true;
       description = "Whether to do Hardware Acceleration";
     };
-    AllowHevcEncoding = mkOption {
+    allowHevcEncoding = mkOption {
       type = types.bool;
       default = false;
       description = "Whether HEVC encoding is enabled";
     };
-    AllowAv1Encoding = mkOption {
+    allowAv1Encoding = mkOption {
       type = types.bool;
       default = false;
       description = "Whether AV1 encoding is enabled";
     };
-    EncodingThreadCount = mkOption {
+    encodingThreadCount = mkOption {
       type = types.int;
       default = -1;
       description = ''
@@ -29,24 +29,24 @@ with lib; {
         Set to -1 for automatic and 0 for max.
       '';
     };
-    TranscodingTempPath = mkOption {
+    transcodingTempPath = mkOption {
       type = types.str;
       default = "/var/cache/jellyfin/transcodes";
       description = "Path for temporary transcoded files when streaming";
     };
-    EnableFallbackFont = mkEnableOption "Enable fallback font";
-    EnableAudioVbr = mkEnableOption "Enable VBR Audio";
-    DownMixAudioBoost = mkOption {
+    enableFallbackFont = mkEnableOption "Enable fallback font";
+    enableAudioVbr = mkEnableOption "Enable VBR Audio";
+    downMixAudioBoost = mkOption {
       type = types.number;
       default = 2;
       description = "Boost audio when downmixing. A value of one will preserve the original volume.";
     };
-    DownMixStereoAlgorithm = mkOption {
+    downMixStereoAlgorithm = mkOption {
       type = types.enum ["None" "Dave750" "NightmodeDialogue" "RFC7845" "AC-4"];
       default = "None";
       description = "Algorithm used to downmix multi-channel audio to stereo.";
     };
-    MaxMuxingQueueSize = mkOption {
+    maxMuxingQueueSize = mkOption {
       type = types.int;
       default = 2048;
       description = ''
@@ -56,11 +56,11 @@ with lib; {
         The recommended value is `2048`.
       '';
     };
-    EnableThrottling = mkEnableOption ''
+    enableThrottling = mkEnableOption ''
       When a transcode or remux gets far enough ahead from the current playback position, pause the process so it will consume fewer resources.
       This is most useful when watching without seeking often. Turn this off if you experience playback issues.
     '';
-    ThrottleDelaySeconds = mkOption {
+    throttleDelaySeconds = mkOption {
       type = types.int;
       default = 180;
       description = ''
@@ -69,12 +69,12 @@ with lib; {
         Only works if throttling is enabled.
       '';
     };
-    EnableSegmentDeletion = mkEnableOption ''
+    enableSegmentDeletion = mkEnableOption ''
       Delete old segments after they have been downloaded by the client.
       This prevents having to store the entire transcoded file on disk.
       Turn this off if you experience playback issues.
     '';
-    SegmentKeepSeconds = mkOption {
+    segmentKeepSeconds = mkOption {
       type = types.int;
       default = 720;
       description = ''
@@ -83,7 +83,7 @@ with lib; {
       '';
     };
 
-    HardwareAccelerationType = mkOption {
+    hardwareAccelerationType = mkOption {
       type = types.enum ["none" "qsv" "amf" "nvenc" "vaapi" "rkmpp" "videotoolbox" "v4l2m2m"];
       description = ''
         Whether or not to use hardware acceleration for transcoding.
@@ -93,12 +93,12 @@ with lib; {
       '';
       default = "none";
     };
-    EncoderAppPathDisplay = mkOption {
+    encoderAppPathDisplay = mkOption {
       type = types.str;
       description = "The path to the FFmpeg application file or folder containing FFmpeg.";
       default = "${pkgs.jellyfin-ffmpeg}";
     };
-    VaapiDevice = mkOption {
+    vaapiDevice = mkOption {
       type = types.str;
       description = ''
         This is the render node that is used for hardware acceleration.
@@ -106,7 +106,7 @@ with lib; {
       '';
       default = "/dev/dri/renderD128";
     };
-    QsvDevice = mkOption {
+    qsvDevice = mkOption {
       type = types.str;
       description = ''
         Specify the device for Intel QSV on a multi-GPU system.
@@ -117,11 +117,11 @@ with lib; {
     };
 
     # Tonemapping
-    EnableTonemapping = mkEnableOption ''
+    enableTonemapping = mkEnableOption ''
       Tone-mapping can transform the dynamic range of a video from HDR to SDR while maintaining image details and colors, which are very important information for representing the original scene.
       Currently works only with 10bit HDR10, HLG and DoVi videos. This requires the corresponding GPGPU runtime.
     '';
-    TonemappingAlgorithm = mkOption {
+    tonemappingAlgorithm = mkOption {
       type = types.enum ["none" "bt2390" "clip" "linear" "gamma" "reinhard" "hable" "mobius"];
       description = ''
         Tone mapping can be fine-tuned.
@@ -129,7 +129,7 @@ with lib; {
       '';
       default = "bt2390";
     };
-    TonemappingMode = mkOption {
+    tonemappingMode = mkOption {
       type = types.enum ["auto" "max" "rgb" "lum" "itp"];
       description = ''
         Select the tone mapping mode.
@@ -137,14 +137,14 @@ with lib; {
       '';
       default = "auto";
     };
-    TonemappingRange = mkOption {
+    tonemappingRange = mkOption {
       type = types.enum ["auto" "tv" "pc"];
       description = ''
         Select the output color range. Auto is the same as the input range.
       '';
       default = "auto";
     };
-    TonemappingDesat = mkOption {
+    tonemappingDesat = mkOption {
       type = types.number;
       description = ''
         Apply desaturation for highlights that exceed this level of brightness.
@@ -156,7 +156,7 @@ with lib; {
       '';
       default = 0;
     };
-    TonemappingPeak = mkOption {
+    tonemappingPeak = mkOption {
       type = types.number;
       description = ''
         Override signal/nominal/reference peak with this value.
@@ -166,7 +166,7 @@ with lib; {
       '';
       default = 100;
     };
-    TonemapingParam = mkOption {
+    tonemapingParam = mkOption {
       type = types.number;
       description = ''
         Tune the tone mapping algorithm.
@@ -176,7 +176,7 @@ with lib; {
       '';
       default = 0;
     };
-    VppTonemappingBrightness = mkOption {
+    vppTonemappingBrightness = mkOption {
       type = types.number;
       description = ''
         Apply brightness gain in VPP tone mapping.
@@ -185,7 +185,7 @@ with lib; {
       '';
       default = 16;
     };
-    VppTonemappingContrast = mkOption {
+    vppTonemappingContrast = mkOption {
       type = types.number;
       description = ''
         Apply contrast gain in VPP tone mapping.
@@ -195,7 +195,7 @@ with lib; {
       default = 1;
     };
 
-    H254Crf = mkOption {
+    h254Crf = mkOption {
       type = types.int;
       description = ''
         The 'Constant Rate Factor' (CRF) is the default quality setting for the x264 and x265 software encoders.
@@ -206,7 +206,7 @@ with lib; {
       '';
       default = 23;
     };
-    H256Crf = mkOption {
+    h256Crf = mkOption {
       type = types.int;
       description = ''
         The 'Constant Rate Factor' (CRF) is the default quality setting for the x264 and x265 software encoders.
@@ -218,7 +218,7 @@ with lib; {
       default = 28;
     };
 
-    EncoderPreset = mkOption {
+    encoderPreset = mkOption {
       type = types.enum [
         "auto"
         "veryslow"
@@ -237,10 +237,10 @@ with lib; {
       '';
     };
 
-    DeinterlaceDoubleRate = mkEnableOption ''
+    deinterlaceDoubleRate = mkEnableOption ''
       This setting uses the field rate when deinterlacing, often referred to as bob deinterlacing, which doubles the frame rate of the video to provide full motion like what you would see when viewing interlaced video on a TV.
     '';
-    DeinterlaceMethod = mkOption {
+    deinterlaceMethod = mkOption {
       type = types.enum ["yadif" "bwdif"];
       default = "yadif";
       description = ''
@@ -249,11 +249,11 @@ with lib; {
       '';
     };
 
-    EnableDecodingColorDepth10Hevc = mkEnableOption "Enable hardware decoding for HEVC 10bit";
-    EnableDecodingColorDepth10Vp9 = mkEnableOption "Enable hardware decoding for VP9 10bit";
-    EnableDecodingColorDepth10HevcRext = mkEnableOption "Enable hardware decoding for HEVC RExt 8/10bit";
-    EnableDecodingColorDepth12HevcRext = mkEnableOption "Enable hardware decoding for HEVC RExt 12bit";
-    HardwareDecodingCodecs = mkOption {
+    enableDecodingColorDepth10Hevc = mkEnableOption "Enable hardware decoding for HEVC 10bit";
+    enableDecodingColorDepth10Vp9 = mkEnableOption "Enable hardware decoding for VP9 10bit";
+    enableDecodingColorDepth10HevcRext = mkEnableOption "Enable hardware decoding for HEVC RExt 8/10bit";
+    enableDecodingColorDepth12HevcRext = mkEnableOption "Enable hardware decoding for HEVC RExt 12bit";
+    hardwareDecodingCodecs = mkOption {
       type = types.listOf (types.enum [
         "h264"
         "hevc"
@@ -276,18 +276,18 @@ with lib; {
         Consult https://jellyfin.org/docs/general/administration/hardware-acceleration/ for more info.
       '';
     };
-    EnableIntelLowPowerH264HwEncoder = mkEnableOption ''
+    enableIntelLowPowerH264HwEncoder = mkEnableOption ''
       Low-Power Encoding can keep unnecessary CPU-GPU sync. On Linux they must be disabled if the i915 HuC firmware is not configured.
 
       https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#configure-and-verify-lp-mode-on-linux
     '';
-    EnableIntelLowPowerHevcHwEncoder = mkEnableOption ''
+    enableIntelLowPowerHevcHwEncoder = mkEnableOption ''
       Low-Power Encoding can keep unnecessary CPU-GPU sync. On Linux they must be disabled if the i915 HuC firmware is not configured.
 
       https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#configure-and-verify-lp-mode-on-linux
     '';
 
-    EnableSubtitleExtraction = mkOption {
+    enableSubtitleExtraction = mkOption {
       type = types.bool;
       default = true;
       description = ''
@@ -296,7 +296,7 @@ with lib; {
         Disable this to have embedded subtitles burned in with video transcoding when they are not natively supported by the client device.
       '';
     };
-    AllowOnDemandMetadataBasedKeyframeExtractionForExtensions = mkOption {
+    allowOnDemandMetadataBasedKeyframeExtractionForExtensions = mkOption {
       type = with types; listOf str;
       description = "imma be real i have no idea what this option is. Just leave it as the default";
       default = ["mkv"];

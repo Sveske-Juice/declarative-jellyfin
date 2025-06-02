@@ -8,122 +8,122 @@ with lib; let
     ...
   }: {
     options = {
-      IsAdministrator = mkOption {
+      isAdministrator = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user is an administrator";
       };
-      IsHidden = mkOption {
+      isHidden = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user is hidden";
       };
-      IsDisabled = mkOption {
+      isDisabled = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user is disabled";
       };
-      EnableSharedDeviceControl = mkOption {
+      enableSharedDeviceControl = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can control shared devices";
       };
-      EnableRemoteAccess = mkOption {
+      enableRemoteAccess = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can access the server remotely";
       };
-      EnableLiveTvManagement = mkOption {
+      enableLiveTvManagement = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can manage live tv";
       };
-      EnableLiveTvAccess = mkOption {
+      enableLiveTvAccess = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can access live tv";
       };
-      EnableMediaPlayback = mkOption {
+      enableMediaPlayback = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can play media";
       };
-      EnableAudioPlaybackTranscoding = mkOption {
+      enableAudioPlaybackTranscoding = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the server should transcode audio for the user if requested";
       };
-      EnableVideoPlaybackTranscoding = mkOption {
+      enableVideoPlaybackTranscoding = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the server should transcode video for the user if requested";
       };
-      EnableContentDeletion = mkOption {
+      enableContentDeletion = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user can delete content";
       };
-      EnableContentDownloading = mkOption {
+      enableContentDownloading = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can download content";
       };
-      EnableSyncTranscoding = mkOption {
+      enableSyncTranscoding = mkOption {
         type = types.bool;
         default = true;
         description = "Whether to enable sync transcoding for the user";
       };
-      EnableMediaConversion = mkOption {
+      enableMediaConversion = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user can do media conversion";
       };
-      EnableAllDevices = mkOption {
+      enableAllDevices = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user has access to all devices";
       };
-      EnableAllChannels = mkOption {
+      enableAllChannels = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user has access to all channels";
       };
-      EnableAllFolders = mkOption {
+      enableAllFolders = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user has access to all folders";
       };
-      EnablePublicSharing = mkOption {
+      enablePublicSharing = mkOption {
         type = types.bool;
         default = true;
         description = "Whether to enable public sharing for the user";
       };
-      EnableRemoteControlOfOtherUsers = mkOption {
+      enableRemoteControlOfOtherUsers = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user can remotely control other users";
       };
-      EnablePlaybackRemuxing = mkOption {
+      enablePlaybackRemuxing = mkOption {
         type = types.bool;
         default = true;
         description = "Whether the user is permitted to do playback remuxing";
       };
-      ForceRemoteSourceTranscoding = mkOption {
+      forceRemoteSourceTranscoding = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the server should force transcoding on remote connections for the user";
       };
-      EnableCollectionManagement = mkOption {
+      enableCollectionManagement = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user can create, modify and delete collections";
       };
-      EnableSubtitleManagement = mkOption {
+      enableSubtitleManagement = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user can edit subtitles";
       };
-      EnableLyricManagement = mkOption {
+      enableLyricManagement = mkOption {
         type = types.bool;
         default = false;
         description = "Whether the user can edit lyrics";
@@ -136,7 +136,7 @@ with lib; let
     ...
   }: {
     options = {
-      Permissions = mkOption {
+      permissions = mkOption {
         description = "Permissions for this user";
         default = {};
         type = with types; submodule PermissionOpts;
@@ -147,7 +147,7 @@ with lib; let
           IsDisabled = false;
         };
       };
-      Mutable = mkOption {
+      mutable = mkOption {
         type = types.bool;
         example = false;
         description = ''
@@ -160,89 +160,89 @@ with lib; let
         '';
         default = true;
       };
-      Id = mkOption {
+      id = mkOption {
         type = types.nullOr types.str; # TODO: Limit the id to the pattern: "18B51E25-33FD-46B6-BBF8-DB4DD77D0679"
         description = "The ID of the user";
         example = "18B51E25-33FD-46B6-BBF8-DB4DD77D0679";
         default = null;
       };
-      AudioLanguagePreference = mkOption {
+      audioLanguagePreference = mkOption {
         type = with types; nullOr str;
         description = "The audio language preference. Defaults to 'Any Language'";
         default = null;
         example = "eng";
       };
-      AuthenticationProviderId = mkOption {
+      authenticationProviderId = mkOption {
         type = types.str;
         default = "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider";
       };
-      DisplayCollectionsView = mkOption {
+      displayCollectionsView = mkOption {
         type = types.bool;
         description = "Whether to show the Collections View";
         example = true;
         default = false;
       };
-      DisplayMissingEpisodes = mkOption {
+      displayMissingEpisodes = mkOption {
         type = types.bool;
         description = "Whether to show missing episodes";
         example = true;
         default = false;
       };
-      EnableAutoLogin = mkOption {
+      enableAutoLogin = mkOption {
         type = types.bool;
         example = true;
         default = false;
       };
-      EnableLocalPassword = mkOption {
+      enableLocalPassword = mkOption {
         type = types.bool;
         example = true;
         default = false;
       };
-      EnableNextEpisodeAutoPlay = mkOption {
+      enableNextEpisodeAutoPlay = mkOption {
         type = types.bool;
         description = "Automatically play the next episode";
         example = false;
         default = true;
       };
-      EnableUserPreferenceAccess = mkOption {
+      enableUserPreferenceAccess = mkOption {
         type = types.bool;
         example = false;
         default = true;
       };
-      HidePlayedInLatest = mkOption {
+      hidePlayedInLatest = mkOption {
         type = types.bool;
         description = "Whether to hide already played titles in the 'Latest' section";
         example = false;
         default = true;
       };
-      InternalId = mkOption {
+      internalId = mkOption {
         type = with types; nullOr int;
         # NOTE: index is 1-indexed! NOT 0-indexed.
         description = "The index of the user in the database. Be careful setting this option. 1 indexed.";
         example = 69;
         default = null;
       };
-      LoginAttemptsBeforeLockout = mkOption {
+      loginAttemptsBeforeLockout = mkOption {
         type = types.int;
         description = "The number of login attempts the user can make before they are locked out.";
         example = 10;
         default = 3;
       };
-      MaxActiveSessions = mkOption {
+      maxActiveSessions = mkOption {
         type = types.int;
         description = "The maximum number of active sessions the user can have at once. 0 for unlimited";
         example = 5;
         default = 0;
       };
-      MaxParentalAgeRating = mkOption {
+      maxParentalAgeRating = mkOption {
         type = with types; nullOr int;
         default = null;
       };
-      Password = mkOption {
+      password = mkOption {
         type = with types; nullOr str;
         default = null;
       };
-      HashedPassword = mkOption {
+      hashedPassword = mkOption {
         type = types.nullOr types.str;
         default = null;
         description = ''
@@ -251,7 +251,7 @@ with lib; let
         '';
         example = "$PBKDF2-SHA512$iterations=210000$D12C02D1DD15949D867BCA9971BE9987$67E75CDCD14E7F6FDDF96BAACBE9E84E5197FB9FE454FB039F5CD773D7DF558B57DC81DB42B6F7CF0E6B8207A771E5C0EE0DBFD91CE5BAF804FE53F70E61CD2E";
       };
-      HashedPasswordFile = mkOption {
+      hashedPasswordFile = mkOption {
         type = types.nullOr types.path;
         description = ''
           A path to a pbkdf2-sha512 hash
@@ -275,36 +275,36 @@ with lib; let
         '';
         default = null;
       };
-      PasswordResetProviderId = mkOption {
+      passwordResetProviderId = mkOption {
         type = types.str;
         default = "Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider";
       };
-      PlayDefaultAudioTrack = mkOption {
+      playDefaultAudioTrack = mkOption {
         type = types.bool;
         example = false;
         default = true;
       };
-      RememberAudioSelections = mkOption {
+      rememberAudioSelections = mkOption {
         type = types.bool;
         default = true;
       };
-      RememberSubtitleSelections = mkOption {
+      rememberSubtitleSelections = mkOption {
         type = types.bool;
         default = true;
       };
-      RemoteClientBitrateLimit = mkOption {
+      remoteClientBitrateLimit = mkOption {
         type = types.int;
         description = "0 for unlimited";
         default = 0;
       };
-      SubtitleLanguagePreference = mkOption {
+      subtitleLanguagePreference = mkOption {
         type = with types; nullOr str;
         description = "The subtitle language preference. Defaults to 'Any Language'";
         example = "eng";
         default = null;
       };
       # https://github.com/jellyfin/jellyfin/blob/master/src/Jellyfin.Database/Jellyfin.Database.Implementations/Enums/SubtitlePlaybackMode.cs
-      SubtitleMode = mkOption {
+      subtitleMode = mkOption {
         type = types.enum ["Default" "Always" "OnlyForced" "None" "Smart"];
         description = ''
           Default: The default subtitle playback mode.
@@ -315,34 +315,34 @@ with lib; let
         '';
         default = "Default";
       };
-      SyncPlayAccess = mkOption {
+      syncPlayAccess = mkOption {
         type = types.bool;
         description = "Whether or not this user has access to SyncPlay";
         example = true;
         default = false;
       };
       # Something to do with chromecast, don't know tbh
-      CastReceiverId = mkOption {
+      castReceiverId = mkOption {
         type = types.str;
         default = "F007D354";
       };
-      InvalidLoginAttemptCount = mkOption {
+      invalidLoginAttemptCount = mkOption {
         type = types.int;
         default = 0;
       };
-      MustUpdatePassword = mkOption {
+      mustUpdatePassword = mkOption {
         type = types.int;
         default = 0;
       };
-      RowVersion = mkOption {
+      rowVersion = mkOption {
         type = types.int;
         default = 0;
       };
-      LastActivityDate = mkOption {
+      lastActivityDate = mkOption {
         type = with types; nullOr str;
         default = null;
       };
-      LastLoginDate = mkOption {
+      lastLoginDate = mkOption {
         type = with types; nullOr str;
         default = null;
       };
@@ -351,14 +351,14 @@ with lib; let
 in {
   options.services.declarative-jellyfin.
   # Based on: https://github.com/jellyfin/jellyfin/blob/master/MediaBrowser.Model/Configuration/UserConfiguration.cs
-  Users = mkOption {
+  users = mkOption {
     description = "User configuration";
     default = {};
     type = with types; attrsOf (submodule UserOpts);
     example = {
       Admin = {
-        Password = "123";
-        MaxParentalAgeRaiting = 12;
+        password = "123";
+        maxParentalAgeRaiting = 12;
       };
     };
   };

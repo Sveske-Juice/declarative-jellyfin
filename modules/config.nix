@@ -7,7 +7,9 @@
 with lib; let
   cfg = config.services.declarative-jellyfin;
   genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
-  toXml' = (import ../lib {nixpkgs = pkgs;}).toXMLGeneric;
+  djLib = (import ../lib {nixpkgs = pkgs;});
+  toXml' = djLib.toXMLGeneric;
+  toPascalCase = djLib.toPascalCase;
   isStrList = x: all (x: isString x) x;
   prepass = x:
     if (isAttrs x)
@@ -38,25 +40,6 @@ with lib; let
           x)
       else map prepass x
     else x;
-
-  system =
-    cfg.system;
-  # // {
-  #   # We need to transform cfg.plugins into PluginRepositories for system
-  #   PluginRepositories =
-  #     lib.attrsets.mapAttrsToList
-  #     (name: value: {
-  #       tag = "RepositoryInfo";
-  #       content = {
-  #         Name = builtins.foldl' (a: b: "${a}, ${b}") "Manifest for " (builtins.map (x: x.name) value);
-  #         Url = name;
-  #       };
-  #     })
-  #     (
-  #       builtins.groupBy (x: x.manifest)
-  #       cfg.plugins
-  #     );
-  # };
 
   plugins =
     builtins.map
@@ -158,15 +141,15 @@ with lib; let
   jellyfinConfigFiles = {
     "network.xml" = {
       name = "NetworkConfiguration";
-      content = cfg.network;
+      content = toPascalCase.fromAttrsRecursive cfg.network;
     };
     "encoding.xml" = {
       name = "EncodingOptions";
-      content = cfg.encoding;
+      content = toPascalCase.fromAttrsRecursive cfg.encoding;
     };
     "system.xml" = {
       name = "ServerConfiguration";
-      content = system;
+      content = toPascalCase.fromAttrsRecursive cfg.system;
     };
   };
 
@@ -319,7 +302,7 @@ with lib; let
   prepassedLibraries =
     builtins.mapAttrs
     (name: value:
-      value
+      (toPascalCase.fromAttrsRecursive value)
       // {
         TypeOptions =
           mapAttrsToList
@@ -468,14 +451,14 @@ with lib; let
             fst,
             snd,
           }:
-            genUser fst snd cfg.Users.${snd})
+            genUser fst snd (toPascalCase.fromAttrsRecursive cfg.users.${snd}))
           (
             lib.lists.zipLists
             (
               builtins.genList (x: x)
-              (builtins.length (builtins.attrValues cfg.Users))
+              (builtins.length (builtins.attrValues (toPascalCase.fromAttrsRecursive cfg.users)))
             )
-            (builtins.attrNames cfg.Users)
+            (builtins.attrNames cfg.users)
           )
         )
       }

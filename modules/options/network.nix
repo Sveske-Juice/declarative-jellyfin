@@ -1,65 +1,65 @@
 {lib, ...}:
 with lib; {
   options.services.declarative-jellyfin.network = {
-    BaseUrl = mkOption {
+    baseUrl = mkOption {
       type = types.str;
       default = "";
       description = "Add a custom subdirectory to the server URL. For example: http://example.com/<baseurl>";
     };
-    EnableHttps = mkEnableOption "Enable HTTPS";
-    RequireHttps = mkEnableOption "Require HTTPS";
-    CertificatePath = mkOption {
+    enableHttps = mkEnableOption "Enable HTTPS";
+    requireHttps = mkEnableOption "Require HTTPS";
+    certificatePath = mkOption {
       type = with types; either str path;
       default = "";
       description = "Path to a PKCS #12 file containing a certificate and private key to enable TLS support on a custom domain.";
     };
-    CertificatePassword = mkOption {
+    certificatePassword = mkOption {
       type = types.str;
       default = "";
       description = "If your certificate requires a password, please enter it here.";
     };
-    InternalHttpPort = mkOption {
+    internalHttpPort = mkOption {
       type = types.port;
       default = 8096;
       description = "The TCP port number for the HTTP server.";
     };
-    InternalHttpsPort = mkOption {
+    internalHttpsPort = mkOption {
       type = types.port;
       default = 8920;
       description = "The TCP port number for the HTTPS server.";
     };
-    PublicHttpPort = mkOption {
+    publicHttpPort = mkOption {
       type = types.port;
       default = 8096;
       description = "The public port number that should be mapped to the local HTTP port.";
     };
-    PublicHttpsPort = mkOption {
+    publicHttpsPort = mkOption {
       type = types.port;
       default = 8920;
       description = "The public port number that should be mapped to the local HTTPS port.";
     };
-    AutoDiscovery = mkOption {
+    autoDiscovery = mkOption {
       type = types.bool;
       default = true;
       description = "Enable auto discovery";
     };
-    EnableUPnP = mkEnableOption "Enable UPnP forwarding";
-    EnableIPv4 = mkOption {
+    enableUPnP = mkEnableOption "Enable UPnP forwarding";
+    enableIPv4 = mkOption {
       type = types.bool;
       default = true;
       description = "Enable IPv4 routing";
     };
-    EnableIPv6 = mkOption {
+    enableIPv6 = mkOption {
       type = types.bool;
       default = false;
       description = "Enable IPv6 routing";
     };
-    EnableRemoteAccess = mkOption {
+    enableRemoteAccess = mkOption {
       type = types.bool;
       default = true;
       description = "Enable remote access";
     };
-    LocalNetworkSubnets = mkOption {
+    localNetworkSubnets = mkOption {
       type = with types; listOf str;
       default = [];
       description = ''
@@ -68,24 +68,24 @@ with lib; {
         If left empty, only the server's subnet is considered to be on the local network.
       '';
     };
-    LocalNetworkAddresses = mkEnableOption "UNIMPLEMENTED";
-    KnownProxies = mkOption {
+    localNetworkAddresses = mkEnableOption "UNIMPLEMENTED";
+    knownProxies = mkOption {
       type = with types; listOf str;
       description = "A list of known proxies";
       default = [];
     };
-    IgnoreVirtualInterfaces = mkOption {
+    ignoreVirtualInterfaces = mkOption {
       type = types.bool;
       default = true;
       description = "Ignore virtual interfaces";
     };
-    VirtualInterfaceNames = mkOption {
+    virtualInterfaceNames = mkOption {
       type = with types; listOf str;
       description = "List of virtual interface names";
       default = ["veth"];
     };
-    EnablePublishedServerUriByRequest = mkEnableOption "Enable published server uri by request";
-    PublishedServerUriBySubnet = mkOption {
+    enablePublishedServerUriByRequest = mkEnableOption "Enable published server uri by request";
+    publishedServerUriBySubnet = mkOption {
       type = with types; listOf str;
       description = ''
         Override the URI used by Jellyfin, based on the interface, or client IP address.
@@ -94,7 +94,7 @@ with lib; {
       '';
       default = [];
     };
-    RemoteIpFilter = mkOption {
+    remoteIpFilter = mkOption {
       type = with types; listOf str;
       default = [];
       description = ''
@@ -102,6 +102,6 @@ with lib; {
         If left empty, all remote addresses will be allowed.
       '';
     };
-    IsRemoteIPFilterBlacklist = mkEnableOption "Is the remote ip filter list a blacklist or a whitelist";
+    isRemoteIPFilterBlacklist = mkEnableOption "Is the remote ip filter list a blacklist or a whitelist";
   };
 }
