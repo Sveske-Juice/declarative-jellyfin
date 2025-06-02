@@ -18,60 +18,68 @@ in {
           };
           toPascalCase = (import ../../lib {nixpkgs = pkgs;}).toPascalCase;
         in [
-          (genTest 
-              "from kebab case" 
-              "ThisIsKebabCase" 
-              (toPascalCase.fromString "this-is-kebab-case")
+          (
+            genTest
+            "from kebab case"
+            "ThisIsKebabCase"
+            (toPascalCase.fromString "this-is-kebab-case")
           )
-          (genTest 
-              "from camel case" 
-              "ThisIsCamelCase" 
-              (toPascalCase.fromString "thisIsCamelCase")
+          (
+            genTest
+            "from camel case"
+            "ThisIsCamelCase"
+            (toPascalCase.fromString "thisIsCamelCase")
           )
-          (genTest 
-              "from pascal case" 
-              "ThisIsPascalCase" 
-              (toPascalCase.fromString "ThisIsPascalCase")
+          (
+            genTest
+            "from pascal case"
+            "ThisIsPascalCase"
+            (toPascalCase.fromString "ThisIsPascalCase")
           )
-          (genTest 
-              "from snake case" 
-              "ThisIsSnakeCase" 
-              (toPascalCase.fromString "this_is_snake_case")
+          (
+            genTest
+            "from snake case"
+            "ThisIsSnakeCase"
+            (toPascalCase.fromString "this_is_snake_case")
           )
-          (genTest 
-              "empty string" 
-              "" 
-              (toPascalCase.fromString "")
+          (
+            genTest
+            "empty string"
+            ""
+            (toPascalCase.fromString "")
           )
-          (genTest 
-              "kebab case attribute set" 
-              {
-                KebabCaseName = "kebab-case-value";
-              }
-              (toPascalCase.fromAttrs {kebab-case-name = "kebab-case-value";})
+          (
+            genTest
+            "kebab case attribute set"
+            {
+              KebabCaseName = "kebab-case-value";
+            }
+            (toPascalCase.fromAttrs {kebab-case-name = "kebab-case-value";})
           )
-          (genTest 
-              "camel case attribute set" 
-              {
-                CamelCaseName = "camelCaseValue";
-              }
-              (toPascalCase.fromAttrs {camelCaseName = "camelCaseValue";})
+          (
+            genTest
+            "camel case attribute set"
+            {
+              CamelCaseName = "camelCaseValue";
+            }
+            (toPascalCase.fromAttrs {camelCaseName = "camelCaseValue";})
           )
-          (genTest 
-              "snake case attribute set" 
-              {
-                SnakeCaseName = "snake_case_value";
-              }
-              (toPascalCase.fromAttrs {snake_case_name = "snake_case_value";})
+          (
+            genTest
+            "snake case attribute set"
+            {
+              SnakeCaseName = "snake_case_value";
+            }
+            (toPascalCase.fromAttrs {snake_case_name = "snake_case_value";})
           )
           # TODO: TODO
-          (genTest 
-              "recursive attret test" 
-              "TODO"
-              "TODO"
+          (
+            genTest
+            "recursive attret test"
+            "TODO"
+            "TODO"
           )
         ];
-
       };
     };
 
