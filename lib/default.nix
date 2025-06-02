@@ -54,4 +54,28 @@ in
         else throw "Cannot convert a ${builtins.typeOf xml} to XML. ${toString (builtins.trace xml xml)}";
     in
       toXMLRecursive;
+      toPascalCase = let
+        toPascalCase = parts: builtins.foldl' (a: b: a+b) "" (
+          builtins.map (part: 
+            "${lib.strings.toUpper (builtins.substring 0 1 part)}${
+              lib.strings.toLower (builtins.substring 1 ((builtins.stringLength part)-1) part)
+            }"
+          ) parts
+        );
+      in rec {
+        fromString = x: toPascalCase 
+          (builtins.concatLists 
+            (builtins.filter 
+              (builtins.isList) 
+              (builtins.split "([[:upper:]]?[[:lower:]]*)" x)));
+
+        # Recursively renames attributes to PascalCase
+        fromAttrs' = f: x: if builtins.isAttrs x then with lib.attrsets; 
+          mapAttrs' (name: value: 
+            nameValuePair (fromString name) (f value)
+          ) x
+          else x;
+        fromAttrs = fromAttrs' (x: x);
+        fromAttrsRecursive = fromAttrs' (x: fromAttrsRecursive x);
+      };
   }
