@@ -266,8 +266,8 @@ let
           default = null;
         };
         loginAttemptsBeforeLockout = mkOption {
-          type = types.int;
-          description = "The number of login attempts the user can make before they are locked out.";
+          type = types.nullOr types.int;
+          description = "The number of login attempts the user can make before they are locked out. 0 for default (3 for normal users, 5 for admins). null for unlimited";
           example = 10;
           default = 3;
         };
@@ -408,7 +408,7 @@ in
     example = {
       Admin = {
         password = "123";
-        maxParentalAgeRaiting = 12;
+        maxParentalAgeRating = 12;
       };
     };
   };
