@@ -3,9 +3,10 @@
   ...
 }:
 let
-  name = "minimal";
+  name = "branding";
 
   loginDisclaimer = "LOGIN DISCLAIMER LOGIN DISCLAIMER LOGIN DISCLAIMER";
+  port = 8096;
 in
 {
   inherit name;
@@ -19,6 +20,8 @@ in
           ...
         }:
         {
+          virtualisation.memorySize = 2048; # 2gb
+
           imports = [
             ../../modules/default.nix
           ];
@@ -29,6 +32,7 @@ in
 
           services.declarative-jellyfin = {
             enable = true;
+            network.publicHttpPort = port;
             branding = {
               inherit loginDisclaimer;
               customCSS =
@@ -48,19 +52,25 @@ in
 
           services.xserver.windowManager.i3.enable = true;
           services.xserver.enable = true;
-          services.xserver.displayManager.autoLogin.enable = true;
-          services.xserver.displayManager.autoLogin.user = "test";
+          services.displayManager.autoLogin.enable = true;
+          services.displayManager.autoLogin.user = "test";
         };
     };
+
+    enableOCR = true;
 
     testScript =
       # py
       ''
         machine.start()
         machine.wait_for_unit("multi-user.target");
-        machine.wait_for_unit("jellyfin.service");
         machine.wait_for_unit("graphical.target");
-        machine.succeed("firefox")
+        machine.send_key("esc") # close i3 popup
+        machine.wait_for_console_text(".Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true")
+        machine.wait_for_console_text("Emby.Server.Implementations.ApplicationHost: Core startup complete")
+        machine.execute("sudo -u test firefox localhost:${toString port} >&2>/dev/null &")
+        machine.wait_for_text("Please sign in")
+        machine.wait_for_text("${loginDisclaimer}")
       '';
   };
 }

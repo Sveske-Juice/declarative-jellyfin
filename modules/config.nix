@@ -160,8 +160,8 @@ let
       content = toPascalCase.fromAttrsRecursive cfg.system;
     };
     "branding.xml" = {
-      name = "BrandingConfiguration";
-      content = toPascalCase.fromAttrsRecursive cfg.system;
+      name = "BrandingOptions";
+      content = toPascalCase.fromAttrsRecursive cfg.branding;
     };
   };
 

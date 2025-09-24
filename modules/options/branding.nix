@@ -25,7 +25,7 @@ with lib;
       '';
     };
     splashscreenLocation = mkOption {
-      type = with types; either [path str];
+      type = with types; either path str;
       default = "";
       description = ''
         Location of the splashscreen image
