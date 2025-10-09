@@ -70,7 +70,7 @@ with lib;
         x:
         toPascalCase (
           builtins.concatLists (
-            builtins.filter (builtins.isList) (builtins.split "([[:upper:]]?[[:lower:]]*)" x)
+            builtins.filter (builtins.isList) (builtins.split "([[:upper:]]?[[:lower:]]+|[[:digit:]]+)" x)
           )
         );
 

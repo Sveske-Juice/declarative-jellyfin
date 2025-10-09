@@ -32,6 +32,9 @@ in
               (genTest "from pascal case" "ThisIsPascalCase" (toPascalCase.fromString "ThisIsPascalCase"))
               (genTest "from snake case" "ThisIsSnakeCase" (toPascalCase.fromString "this_is_snake_case"))
               (genTest "empty string" "" (toPascalCase.fromString ""))
+              (genTest "from string with digits" "EnableDecodingColorDepth10Hevc" (
+                toPascalCase.fromString "enableDecodingColorDepth10Hevc"
+              ))
               (genTest "kebab case attribute set" {
                 KebabCaseName = "kebab-case-value";
               } (toPascalCase.fromAttrs { kebab-case-name = "kebab-case-value"; }))
