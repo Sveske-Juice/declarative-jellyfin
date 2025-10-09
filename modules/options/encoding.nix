@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -32,7 +33,8 @@ with lib;
     };
     transcodingTempPath = mkOption {
       type = types.str;
-      default = "/var/cache/jellyfin/transcodes";
+      default = "${config.services.declarative-jellyfin.cacheDir}/transcodes";
+      defaultText = "\${cfg.cacheDir}/transcodes";
       description = "Path for temporary transcoded files when streaming";
     };
     enableFallbackFont = mkEnableOption "Enable fallback font";

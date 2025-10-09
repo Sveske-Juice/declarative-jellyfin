@@ -26,9 +26,14 @@ in
     '';
 
     # Paths
-    cachePath = mkStrOption "/var/cache/jellyfin" ''
-      Specify a custom location for server cache files such as images.
-    '';
+    cachePath = mkOption {
+      type = types.str;
+      default = config.services.declarative-jellyfin.cacheDir;
+      defaultText = "\${cfg.cacheDir}";
+      description = ''
+        Specify a custom location for server cache files such as images.
+      '';
+    };
 
     metadataPath = mkStrOption "/var/lib/jellyfin/metadata" ''
       Specify a custom location for downloaded artwork and metadata.
