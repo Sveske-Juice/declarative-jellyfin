@@ -1,60 +1,49 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "branding";
 
   loginDisclaimer = "LOGIN DISCLAIMER LOGIN DISCLAIMER LOGIN DISCLAIMER";
   port = 8096;
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      machine =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          virtualisation.memorySize = 2048; # 2gb
+      machine = {pkgs, ...}: {
+        virtualisation.memorySize = 2048; # 2gb
 
-          imports = [
-            ../../modules/default.nix
-          ];
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          environment.systemPackages = [
-            pkgs.firefox
-          ];
+        environment.systemPackages = [
+          pkgs.firefox
+        ];
 
-          services.declarative-jellyfin = {
-            enable = true;
-            network.publicHttpPort = port;
-            branding = {
-              inherit loginDisclaimer;
-              customCss =
-                # css
-                ''
-                  * {
-                    color: red !important;
-                  }
-                '';
-              splashscreenEnabled = true;
-            };
+        services.declarative-jellyfin = {
+          enable = true;
+          network.publicHttpPort = port;
+          branding = {
+            inherit loginDisclaimer;
+            customCss =
+              # css
+              ''
+                * {
+                  color: red !important;
+                }
+              '';
+            splashscreenEnabled = true;
           };
-
-          users.users.test = {
-            isNormalUser = true;
-          };
-
-          services.xserver.windowManager.i3.enable = true;
-          services.xserver.enable = true;
-          services.displayManager.autoLogin.enable = true;
-          services.displayManager.autoLogin.user = "test";
         };
+
+        users.users.test = {
+          isNormalUser = true;
+        };
+
+        services.xserver.windowManager.i3.enable = true;
+        services.xserver.enable = true;
+        services.displayManager.autoLogin.enable = true;
+        services.displayManager.autoLogin.user = "test";
+      };
     };
 
     enableOCR = true;

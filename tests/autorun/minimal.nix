@@ -1,35 +1,24 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "minimal";
   port = 8096;
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      machine =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
+      machine = {...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          virtualisation.memorySize = 1024;
+        virtualisation.memorySize = 1024;
 
-          # Doesn't get more minimal than this
-          services.declarative-jellyfin = {
-            enable = true;
-            network.publicHttpPort = port;
-          };
+        # Doesn't get more minimal than this
+        services.declarative-jellyfin = {
+          enable = true;
+          network.publicHttpPort = port;
         };
+      };
     };
 
     testScript =

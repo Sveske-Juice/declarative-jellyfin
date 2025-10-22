@@ -1,85 +1,74 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "libraries";
   port = 8096;
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      machine =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
+      machine = {...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          virtualisation.memorySize = 1024;
+        virtualisation.memorySize = 1024;
 
-          system.activationScripts.setupFolders =
-            # bash
-            ''
-              mkdir -p /data/Movies
-              mkdir -p /data/Shows
-              mkdir -p /data/Pictures
-              mkdir -p /data/Videos
-              mkdir -p /data/Books
-              mkdir -p /data/Music
-            '';
+        system.activationScripts.setupFolders =
+          # bash
+          ''
+            mkdir -p /data/Movies
+            mkdir -p /data/Shows
+            mkdir -p /data/Pictures
+            mkdir -p /data/Videos
+            mkdir -p /data/Books
+            mkdir -p /data/Music
+          '';
 
-          services.declarative-jellyfin = {
-            network.publicHttpPort = port;
-            enable = true;
-            system.isStartupWizardCompleted = true;
-            openFirewall = true;
-            users = {
-              admin = {
-                password = "admin";
-                permissions = {
-                  isAdministrator = true;
-                };
-              };
-            };
-            libraries = {
-              Movies = {
-                enabled = true;
-                contentType = "movies";
-                pathInfos = [ "/data/Movies" ];
-              };
-              Shows = {
-                enabled = true;
-                contentType = "tvshows";
-                pathInfos = [ "/data/Shows" ];
-              };
-              "Photos and videos" = {
-                enabled = true;
-                contentType = "homevideos";
-                pathInfos = [
-                  "/data/Pictures"
-                  "/data/Videos"
-                ];
-              };
-              Books = {
-                enabled = true;
-                contentType = "books";
-                pathInfos = [ "/data/Books" ];
-              };
-              Music = {
-                enabled = true;
-                contentType = "music";
-                pathInfos = [ "/data/Music" ];
+        services.declarative-jellyfin = {
+          network.publicHttpPort = port;
+          enable = true;
+          system.isStartupWizardCompleted = true;
+          openFirewall = true;
+          users = {
+            admin = {
+              password = "admin";
+              permissions = {
+                isAdministrator = true;
               };
             };
           };
+          libraries = {
+            Movies = {
+              enabled = true;
+              contentType = "movies";
+              pathInfos = ["/data/Movies"];
+            };
+            Shows = {
+              enabled = true;
+              contentType = "tvshows";
+              pathInfos = ["/data/Shows"];
+            };
+            "Photos and videos" = {
+              enabled = true;
+              contentType = "homevideos";
+              pathInfos = [
+                "/data/Pictures"
+                "/data/Videos"
+              ];
+            };
+            Books = {
+              enabled = true;
+              contentType = "books";
+              pathInfos = ["/data/Books"];
+            };
+            Music = {
+              enabled = true;
+              contentType = "music";
+              pathInfos = ["/data/Music"];
+            };
+          };
         };
+      };
     };
 
     testScript =

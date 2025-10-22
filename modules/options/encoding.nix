@@ -4,8 +4,7 @@
   lib,
   ...
 }:
-with lib;
-{
+with lib; {
   options.services.declarative-jellyfin.encoding = {
     enableHardwareEncoding = mkOption {
       type = types.bool;
@@ -346,7 +345,7 @@ with lib;
     allowOnDemandMetadataBasedKeyframeExtractionForExtensions = mkOption {
       type = with types; listOf str;
       description = "imma be real i have no idea what this option is. Just leave it as the default";
-      default = [ "mkv" ];
+      default = ["mkv"];
     };
   };
 }

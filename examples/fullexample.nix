@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   services.declarative-jellyfin = {
     enable = true;
     serverId = "f4655afd22f348e19089c6b474b24a73";
@@ -8,7 +7,7 @@
       Movies = {
         enabled = true;
         contentType = "movies";
-        pathInfos = [ "/data/Movies" ];
+        pathInfos = ["/data/Movies"];
         typeOptions.Movies = {
           metadataFetchers = [
             "The Open Movie Database"
@@ -23,7 +22,7 @@
       Shows = {
         enabled = true;
         contentType = "tvshows";
-        pathInfos = [ "/data/Shows" ];
+        pathInfos = ["/data/Shows"];
       };
       "Photos and videos" = {
         enabled = true;
@@ -36,12 +35,12 @@
       Books = {
         enabled = true;
         contentType = "books";
-        pathInfos = [ "/data/Books" ];
+        pathInfos = ["/data/Books"];
       };
       Music = {
         enabled = true;
         contentType = "music";
-        pathInfos = [ "/data/Music" ];
+        pathInfos = ["/data/Music"];
       };
     };
 

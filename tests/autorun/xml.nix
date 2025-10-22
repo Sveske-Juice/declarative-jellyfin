@@ -1,181 +1,177 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "xmltests";
   configs = {
     system = "/var/lib/jellyfin/config/system.xml";
     network = "/var/lib/jellyfin/config/network.xml";
     encoding = "/var/lib/jellyfin/config/encoding.xml";
   };
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      machine =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
-          environment.systemPackages = [ pkgs.xmlstarlet ];
+      machine = {pkgs, ...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
+        environment.systemPackages = [pkgs.xmlstarlet];
 
-          # assertions = let
-          #   toXml = (import ../lib {nixpkgs = pkgs;}).toXMLGeneric;
-          # in [
-          #   (
-          #     let
-          #       xml =
-          #         toXml {tag = "test";};
-          #       expected = ''
-          #         <?xml version='1.0' encoding='utf-8'?>
-          #         <test />
-          #       '';
-          #     in {
-          #       assertion = xml == expected;
-          #       message = "Generated XML is incorrect!\nExpected \n\n${expected}\n\n but got \n\n${xml}\n";
-          #     }
-          #   )
-          # ];
+        # assertions = let
+        #   toXml = (import ../lib {nixpkgs = pkgs;}).toXMLGeneric;
+        # in [
+        #   (
+        #     let
+        #       xml =
+        #         toXml {tag = "test";};
+        #       expected = ''
+        #         <?xml version='1.0' encoding='utf-8'?>
+        #         <test />
+        #       '';
+        #     in {
+        #       assertion = xml == expected;
+        #       message = "Generated XML is incorrect!\nExpected \n\n${expected}\n\n but got \n\n${xml}\n";
+        #     }
+        #   )
+        # ];
 
-          assertions =
-            let
-              genTest = name: expected: got: {
-                assertion = expected == got;
-                message = "[Test: ${name}] Generated XML is incorrect!\nExpected \n\n${expected}\n but got \n\n${got}";
+        assertions = let
+          genTest = name: expected: got: {
+            assertion = expected == got;
+            message = "[Test: ${name}] Generated XML is incorrect!\nExpected \n\n${expected}\n but got \n\n${got}";
+          };
+          toXml = (import ../../lib {nixpkgs = pkgs;}).toXMLGeneric;
+        in [
+          (
+            genTest "Single tag"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test />
+            ''
+            (toXml {
+              tag = "test";
+            })
+          )
+          (
+            genTest "Single inner tag"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test>
+                <inner />
+              </test>
+            ''
+            (toXml {
+              tag = "test";
+              content = {
+                tag = "inner";
               };
-              toXml = (import ../../lib { nixpkgs = pkgs; }).toXMLGeneric;
-            in
-            [
-              (genTest "Single tag"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test />
-                ''
-                (toXml {
-                  tag = "test";
-                })
-              )
-              (genTest "Single inner tag"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test>
-                    <inner />
-                  </test>
-                ''
-                (toXml {
-                  tag = "test";
-                  content = {
-                    tag = "inner";
-                  };
-                })
-              )
-              (genTest "Tag with string"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test>stringstringstring</test>
-                ''
-                (toXml {
-                  tag = "test";
-                  content = "stringstringstring";
-                })
-              )
-              (genTest "Empty string"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test />
-                ''
-                (toXml {
-                  tag = "test";
-                  content = "";
-                })
-              )
-              (genTest "List of tags"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test>
-                    <tag0 />
-                    <tag1 />
-                    <tag2 />
-                    <tag3 />
-                    <tag4 />
-                    <tag5 />
-                    <tag6 />
-                    <tag7 />
-                    <tag8 />
-                  </test>
-                ''
-                (toXml {
-                  tag = "test";
-                  content = builtins.genList (x: { tag = "tag${toString x}"; }) 9;
-                })
-              )
-              (genTest "Empty list"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test />
-                ''
-                (toXml {
-                  tag = "test";
-                  content = [ ];
-                })
-              )
-              (genTest "bool value true"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test>true</test>
-                ''
-                (toXml {
-                  tag = "test";
-                  content = true;
-                })
-              )
-              (genTest "bool value false"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <test>false</test>
-                ''
-                (toXml {
-                  tag = "test";
-                  content = false;
-                })
-              )
-              (genTest "tags with attrib should close after attrib"
-                ''
-                  <?xml version='1.0' encoding='utf-8'?>
-                  <LibraryOptions xmlns:xsd="http://www.w3.org/2001/XMLSchema">test</LibraryOptions>
-                ''
-                (toXml {
-                  tag = "LibraryOptions";
-                  attrib = {
-                    "xmlns:xsd" = "http://www.w3.org/2001/XMLSchema";
-                  };
-                  content = "test";
-                })
-              )
+            })
+          )
+          (
+            genTest "Tag with string"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test>stringstringstring</test>
+            ''
+            (toXml {
+              tag = "test";
+              content = "stringstringstring";
+            })
+          )
+          (
+            genTest "Empty string"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test />
+            ''
+            (toXml {
+              tag = "test";
+              content = "";
+            })
+          )
+          (
+            genTest "List of tags"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test>
+                <tag0 />
+                <tag1 />
+                <tag2 />
+                <tag3 />
+                <tag4 />
+                <tag5 />
+                <tag6 />
+                <tag7 />
+                <tag8 />
+              </test>
+            ''
+            (toXml {
+              tag = "test";
+              content = builtins.genList (x: {tag = "tag${toString x}";}) 9;
+            })
+          )
+          (
+            genTest "Empty list"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test />
+            ''
+            (toXml {
+              tag = "test";
+              content = [];
+            })
+          )
+          (
+            genTest "bool value true"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test>true</test>
+            ''
+            (toXml {
+              tag = "test";
+              content = true;
+            })
+          )
+          (
+            genTest "bool value false"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <test>false</test>
+            ''
+            (toXml {
+              tag = "test";
+              content = false;
+            })
+          )
+          (
+            genTest "tags with attrib should close after attrib"
+            ''
+              <?xml version='1.0' encoding='utf-8'?>
+              <LibraryOptions xmlns:xsd="http://www.w3.org/2001/XMLSchema">test</LibraryOptions>
+            ''
+            (toXml {
+              tag = "LibraryOptions";
+              attrib = {
+                "xmlns:xsd" = "http://www.w3.org/2001/XMLSchema";
+              };
+              content = "test";
+            })
+          )
+        ];
+
+        virtualisation.memorySize = 1024;
+
+        services.declarative-jellyfin = {
+          enable = true;
+          network = {
+            publishedServerUriBySubnet = [
+              "all=https://test.test.test"
             ];
-
-          virtualisation.memorySize = 1024;
-
-          services.declarative-jellyfin = {
-            enable = true;
-            network = {
-              publishedServerUriBySubnet = [
-                "all=https://test.test.test"
-              ];
-              enableHttps = true;
-              requireHttps = true;
-              certificatePath = "/path/to/cert";
-            };
+            enableHttps = true;
+            requireHttps = true;
+            certificatePath = "/path/to/cert";
           };
         };
+      };
     };
 
     testScript =
@@ -187,7 +183,7 @@ in
 
         # Make sure every config can be parsed without erros
         ${pkgs.lib.concatStringsSep "\n" (
-          pkgs.lib.mapAttrsToList (name: path: "machine.succeed(\"xmlstarlet val '${path}'\")") configs
+          pkgs.lib.mapAttrsToList (_name: path: "machine.succeed(\"xmlstarlet val '${path}'\")") configs
         )}
 
 

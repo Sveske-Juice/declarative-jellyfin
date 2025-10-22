@@ -1,6 +1,5 @@
-{ lib, ... }:
-with lib;
-{
+{lib, ...}:
+with lib; {
   options.services.declarative-jellyfin.branding = {
     loginDisclaimer = mkOption {
       type = with types; lines;

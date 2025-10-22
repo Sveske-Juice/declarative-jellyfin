@@ -5,39 +5,31 @@
   ...
 }:
 with lib;
-with types;
-let
+with types; let
   cfg = config.services.declarative-jellyfin;
-  apikeyOpts =
-    {
-      name,
-      config,
-      ...
-    }:
-    {
-      options = {
-        key = mkOption {
-          type = nullOr str;
-          default = null;
-          description = ''
-            The API key (GUID).
-            WARNING: This is stored in plain text
-          '';
-          example = "78878bf9fc654ff78ae332c63de5aeb6";
-        };
-        keyPath = mkOption {
-          type = nullOr path;
-          default = null;
-          description = ''
-            Path to a file containing API key.
-            The key is a random GUID. To generate one, run:
-            ```uuidgen -r | sed 's/-//g'```
-          '';
-        };
+  apikeyOpts = _: {
+    options = {
+      key = mkOption {
+        type = nullOr str;
+        default = null;
+        description = ''
+          The API key (GUID).
+          WARNING: This is stored in plain text
+        '';
+        example = "78878bf9fc654ff78ae332c63de5aeb6";
+      };
+      keyPath = mkOption {
+        type = nullOr path;
+        default = null;
+        description = ''
+          Path to a file containing API key.
+          The key is a random GUID. To generate one, run:
+          ```uuidgen -r | sed 's/-//g'```
+        '';
       };
     };
-in
-{
+  };
+in {
   imports = [
     ./system.nix
     ./encoding.nix
@@ -52,7 +44,7 @@ in
 
     apikeys = mkOption {
       description = "API keys configuration";
-      default = { };
+      default = {};
       type = attrsOf (submodule apikeyOpts);
       example = {
         Jellyseerr = {
@@ -168,12 +160,12 @@ in
 
   config.assertions = [
     {
-      assertion = all (apikey: (!isNull apikey.key) || (!isNull apikey.keyPath)) (attrValues cfg.apikeys);
+      assertion = all (apikey: (apikey.key != null) || (apikey.keyPath != null)) (attrValues cfg.apikeys);
       message = "API key must be spcecified";
     }
     {
       assertion = all (
-        userOpts: !(userOpts.preferences.enabledLibraries != [ ] && userOpts.permissions.enableAllFolders)
+        userOpts: !(userOpts.preferences.enabledLibraries != [] && userOpts.permissions.enableAllFolders)
       ) (attrValues cfg.users);
       message = ''
         When specifying custom library access with `Preferences.EnabledLibraries`, you have
@@ -183,11 +175,12 @@ in
     {
       assertion = all (
         userOpts:
-        (lib.count isNull [
-          userOpts.password
-          userOpts.hashedPassword
-          userOpts.hashedPasswordFile
-        ]) == 2
+          (lib.count isNull [
+            userOpts.password
+            userOpts.hashedPassword
+            userOpts.hashedPasswordFile
+          ])
+          == 2
       ) (attrValues cfg.users);
       message = ''
         For a user, exactly one of `password`, `hashedPassword` and `hashedPasswordFile` should be defined.

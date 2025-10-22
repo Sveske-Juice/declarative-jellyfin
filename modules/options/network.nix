@@ -1,6 +1,5 @@
-{ lib, ... }:
-with lib;
-{
+{lib, ...}:
+with lib; {
   options.services.declarative-jellyfin.network = {
     baseUrl = mkOption {
       type = types.str;
@@ -62,7 +61,7 @@ with lib;
     };
     localNetworkSubnets = mkOption {
       type = with types; listOf str;
-      default = [ ];
+      default = [];
       description = ''
         List of IP addresses or IP/netmask entries for networks that will be considered on local network when enforcing bandwidth restrictions.
         If set, all other IP addresses will be considered to be on the external network and will be subject to the external bandwidth restrictions.
@@ -73,7 +72,7 @@ with lib;
     knownProxies = mkOption {
       type = with types; listOf str;
       description = "A list of known proxies";
-      default = [ ];
+      default = [];
     };
     ignoreVirtualInterfaces = mkOption {
       type = types.bool;
@@ -83,7 +82,7 @@ with lib;
     virtualInterfaceNames = mkOption {
       type = with types; listOf str;
       description = "List of virtual interface names";
-      default = [ "veth" ];
+      default = ["veth"];
     };
     enablePublishedServerUriByRequest = mkEnableOption "Enable published server uri by request";
     publishedServerUriBySubnet = mkOption {
@@ -93,11 +92,11 @@ with lib;
 
         For example: `["internal=http://jellyfin.example.com" "external=https://jellyfin.example.com"]` or `["all=https://jellyfin.example.com"]`
       '';
-      default = [ ];
+      default = [];
     };
     remoteIpFilter = mkOption {
       type = with types; listOf str;
-      default = [ ];
+      default = [];
       description = ''
         List of IP addresses or IP/netmask entries for networks that will be allowed to connect remotely.
         If left empty, all remote addresses will be allowed.

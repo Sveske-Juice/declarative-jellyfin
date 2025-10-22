@@ -1,39 +1,28 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "backups";
   port = 8096;
   backupDir = "/var/lib/jellyfin/backups";
   backupCount = 2;
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      ${name} =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
+      ${name} = {...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          virtualisation.memorySize = 1024;
+        virtualisation.memorySize = 1024;
 
-          services.declarative-jellyfin = {
-            enable = true;
-            network.publicHttpPort = port;
-            backups = true;
-            inherit backupDir;
-            inherit backupCount;
-          };
+        services.declarative-jellyfin = {
+          enable = true;
+          network.publicHttpPort = port;
+          backups = true;
+          inherit backupDir;
+          inherit backupCount;
         };
+      };
     };
 
     testScript =

@@ -1,56 +1,39 @@
-{
-  pkgs ? import <nixpkgs> { },
-  ...
-}:
-let
+{pkgs ? import <nixpkgs> {}, ...}: let
   name = "migrations";
   port = 8096;
-in
-{
+in {
   inherit name;
   test = pkgs.nixosTest {
     inherit name;
     nodes = {
-      normal =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
+      normal = {pkgs, ...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          virtualisation.memorySize = 1024;
+        virtualisation.memorySize = 1024;
 
-          services.jellyfin = {
-            enable = true;
-          };
-
-          environment.systemPackages = with pkgs; [
-            gnutar
-          ];
+        services.jellyfin = {
+          enable = true;
         };
 
-      declarative =
-        {
-          config,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            ../../modules/default.nix
-          ];
+        environment.systemPackages = with pkgs; [
+          gnutar
+        ];
+      };
 
-          virtualisation.memorySize = 1024;
+      declarative = {...}: {
+        imports = [
+          ../../modules/default.nix
+        ];
 
-          services.declarative-jellyfin = {
-            enable = true;
-            network.publicHttpPort = port;
-          };
+        virtualisation.memorySize = 1024;
+
+        services.declarative-jellyfin = {
+          enable = true;
+          network.publicHttpPort = port;
         };
+      };
     };
 
     testScript =

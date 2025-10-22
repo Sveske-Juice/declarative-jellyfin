@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   imports = [
     ./config.nix
     ./options

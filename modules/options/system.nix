@@ -3,16 +3,13 @@
   config,
   ...
 }:
-with lib;
-let
-  mkStrOption =
-    default: description:
+with lib; let
+  mkStrOption = default: description:
     mkOption {
       type = types.str;
       inherit default description;
     };
-in
-{
+in {
   options.services.declarative-jellyfin.system = {
     serverName = mkStrOption config.networking.hostName ''
       This name will be used to identify the server and will default to the server's hostname.
@@ -174,7 +171,7 @@ in
     };
 
     imageSavingConvention = mkOption {
-      type = types.enum [ "Legacy" ];
+      type = types.enum ["Legacy"];
       default = "Legacy";
       description = "i got no idea what this is";
     };
@@ -186,96 +183,96 @@ in
           tag = "MetadataOptions";
           content = {
             itemType = "Movie";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = [];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "MusicVideo";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ "The Open Movie Database" ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ "The Open Movie Database" ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = ["The Open Movie Database"];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = ["The Open Movie Database"];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "Series";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = [];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "MusicAlbum";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ "TheAudioDB" ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = ["TheAudioDB"];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "MusicArtist";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ "TheAudioDB" ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            ImageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = ["TheAudioDB"];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            ImageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "BoxSet";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = [];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "Season";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = [];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
         {
           tag = "MetadataOptions";
           content = {
             itemType = "Episode";
-            disabledMetadataSavers = [ ];
-            disabledMetadataFetchers = [ ];
-            localMetadataReaderOrder = [ ];
-            metadataFetcherOrder = [ ];
-            disabledImageFetchers = [ ];
-            imageFetcherOrder = [ ];
+            disabledMetadataSavers = [];
+            disabledMetadataFetchers = [];
+            localMetadataReaderOrder = [];
+            metadataFetcherOrder = [];
+            disabledImageFetchers = [];
+            imageFetcherOrder = [];
           };
         }
       ];
@@ -295,7 +292,7 @@ in
 
     contentTypes = mkOption {
       type = with types; listOf str;
-      default = [ ];
+      default = [];
     };
 
     remoteClientBitrateLimit = mkOption {
@@ -314,7 +311,7 @@ in
 
     codecsUsed = mkOption {
       type = with types; listOf str;
-      default = [ ];
+      default = [];
     };
 
     pluginRepositories = mkOption {
@@ -345,7 +342,7 @@ in
 
     pathSubstitutions = mkOption {
       type = with types; listOf str;
-      default = [ ];
+      default = [];
     };
 
     enableSlowResponseWarning = mkOption {
