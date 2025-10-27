@@ -324,7 +324,6 @@ with lib; let
     ''
         set -euo pipefail
         rm -rf "${jellyfinDoneTag}"
-        trap cleanup EXIT SIGINT SIGTERM SIGHUP SIGQUIT
         trap handle_error ERR
 
         # u=rwx
@@ -350,11 +349,6 @@ with lib; let
           ${print "Log file:\n$(cat \"${log}\")"}
         }
 
-        function cleanup() {
-          ${print "REMOVING DONE TAG"}
-          rm -rf "${jellyfinDoneTag}"
-        }
-
         dbcmds="$(mktemp -d)/${dbcmdfile}"
         install -Dm 774 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} /dev/null "$dbcmds"
         trap "rm -rf \"$dbcmds\"" exit
@@ -364,7 +358,7 @@ with lib; let
           # Install each config
           ${concatStringsSep "\n" (
         mapAttrsToList (
-          file: path: ''install -Dm 640 "${path}" "${config.services.jellyfin.configDir}/${file}"''
+          file: path: ''install -Dm 640 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${path}" "${config.services.jellyfin.configDir}/${file}"''
         )
         configDerivations
       )}
@@ -381,7 +375,8 @@ with lib; let
             echo "First time run and no migrations.xml. We run jellyfin once to generate it..."
             echo "Starting jellyfin with IsStartupWizardCompleted = false"
             ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
-            ${jellyfin-exec} & disown
+            # Drop root privileges when running jellyfin
+            ${pkgs.util-linux}/bin/runuser -u ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} -- ${jellyfin-exec} & disown
             echo "Waiting for jellyfin to generate migrations.xml"
             until [ -f "${config.services.jellyfin.configDir}/migrations.xml" ]
             do
@@ -528,7 +523,6 @@ with lib; let
       ${pkgs.sqlite}/bin/sqlite3 "${config.services.jellyfin.dataDir}/data/${dbname}" < "$dbcmds"
 
       touch '${jellyfinDoneTag}'
-      ${jellyfin-exec}
     '';
 in {
   config = mkIf cfg.enable {
@@ -549,7 +543,11 @@ in {
       cfg.network.publicHttpPort
       cfg.network.publicHttpsPort
     ];
-    systemd.services.jellyfin.serviceConfig.ExecStart =
-      lib.mkForce "+${jellyfin-init}/bin/jellyfin-init";
+
+    systemd.services.jellyfin.serviceConfig = {
+      ExecStartPre = "+${jellyfin-init}/bin/jellyfin-init";
+      ExecStart = jellyfin-exec;
+      ExecStop="+/bin/sh -c 'rm -rf ${jellyfinDoneTag}'";
+    };
   };
 }
