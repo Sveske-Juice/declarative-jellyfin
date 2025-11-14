@@ -16,6 +16,8 @@ in {
         in [
           (genTest "from kebab case" "ThisIsKebabCase" (toPascalCase.fromString "this-is-kebab-case"))
           (genTest "from camel case" "ThisIsCamelCase" (toPascalCase.fromString "thisIsCamelCase"))
+          (genTest "from camel case acronym IPv6" "EnableIPv6" (toPascalCase.fromString "enableIPv6"))
+          (genTest "from camel case acronym UPnP" "EnableUPnP" (toPascalCase.fromString "enableUPnP"))
           (genTest "from pascal case" "ThisIsPascalCase" (toPascalCase.fromString "ThisIsPascalCase"))
           (genTest "from snake case" "ThisIsSnakeCase" (toPascalCase.fromString "this_is_snake_case"))
           (genTest "empty string" "" (toPascalCase.fromString ""))
