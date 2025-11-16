@@ -52,9 +52,15 @@ in
       toPascalCase = parts:
         builtins.foldl' (a: b: a + b) "" (
           builtins.map (
-            part: "${lib.strings.toUpper (builtins.substring 0 1 part)}${
-              lib.strings.toLower (builtins.substring 1 ((builtins.stringLength part) - 1) part)
-            }"
+            part: let
+              firstChar = builtins.substring 0 1 part;
+              rest = builtins.substring 1 ((builtins.stringLength part) - 1) part;
+            in
+              # If part is entirely lowercase, capitalize first letter
+              # Otherwise, preserve the part's original casing
+              if part == lib.strings.toLower part
+              then "${lib.strings.toUpper firstChar}${rest}"
+              else part
           )
           parts
         );
@@ -62,10 +68,9 @@ in
       fromString = x:
         toPascalCase (
           builtins.concatLists (
-            builtins.filter builtins.isList (builtins.split "([[:upper:]]?[[:lower:]]+|[[:digit:]]+)" x)
+            builtins.filter builtins.isList (builtins.split "([[:upper:]]+[[:lower:]]+|[[:upper:]]|[[:lower:]]+|[[:digit:]]+)" x)
           )
         );
-
       # Recursively renames attributes to PascalCase
       fromAttrs' = f: x:
         if builtins.isAttrs x
