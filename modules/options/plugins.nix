@@ -1,6 +1,6 @@
 {lib, ...}:
 with lib; let
-  pluginOptions = {name, ...}: {
+  pluginOptions = _: {
     options = {
       name = mkOption {
         type = types.str;
