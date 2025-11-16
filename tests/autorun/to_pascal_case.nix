@@ -3,7 +3,7 @@
 in {
   inherit name;
   # TODO: Move this out of a vm. it just needs to be an evaluation time assertion
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       machine = {pkgs, ...}: {
@@ -33,6 +33,8 @@ in {
           (genTest "snake case attribute set" {
             SnakeCaseName = "snake_case_value";
           } (toPascalCase.fromAttrs {snake_case_name = "snake_case_value";}))
+          (genTest "multiple uppercase letters" "SettingAboutIPOrSomething" (toPascalCase.fromString "settingAboutIPOrSomething"))
+          (genTest "all uppercase" "ALLUPPERCASE" (toPascalCase.fromString "aLLUPPERCASE"))
 
           # Ensures structural keys are preserved (tag/content/attrib),
           # while inner data keys are PascalCased.

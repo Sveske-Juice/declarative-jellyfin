@@ -5,7 +5,7 @@
   backupCount = 2;
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       ${name} = {...}: {
@@ -17,6 +17,7 @@ in {
 
         services.declarative-jellyfin = {
           enable = true;
+          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
           backups = true;
           inherit backupDir;
