@@ -192,7 +192,11 @@ in {
           # stupid fucking hack because you cant open files in python for some reason
           xml = machine.succeed("cat '${configs.network}'")
           tree = ET.ElementTree(ET.fromstring(xml))
+          if tree is None:
+            raise TypeError
           root = tree.getroot()
+          if root is None:
+            raise TypeError
 
           with subtest("PublishedServerUriBySubnet"):
             for child in root:
