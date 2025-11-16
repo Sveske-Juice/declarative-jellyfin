@@ -6,11 +6,15 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-fast-build = {
+      url = "github:Mic92/nix-fast-build";
+    };
   };
   outputs = {
     nixpkgs,
     systems,
     treefmt-nix,
+    nix-fast-build,
     ...
   }: let
     forAllSystems = nixpkgs.lib.genAttrs (import systems);
@@ -65,6 +69,13 @@
             inherit (pkgs) lib writeTextFile writeShellScript;
           }
         );
+      };
+
+      run-tests = {
+        type = "app";
+        program = builtins.toString (pkgs.writeShellScript "run-tests.sh" ''
+          ${pkgs.lib.getExe nix-fast-build.packages.${pkgs.system}.default} $@
+        '');
       };
     });
 
