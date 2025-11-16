@@ -381,12 +381,12 @@ with lib; let
             echo "Starting jellyfin with IsStartupWizardCompleted = false"
             ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
             ${jellyfin-exec} & disown
-            echo "Waiting 60 seconds for jellyfin to do migrations, then shutdown and check again"
+            echo "Waiting for jellyfin to run migrations"
             until [ -n "$(${sq} "SELECT name FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory'")" ];
             do
               sleep 1
             done
-            sleep 5
+            sleep 15
             echo "Migrations ran! Restarting jellyfin..."
             ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
             echo "Waiting for jellyfin to shut down properly"
