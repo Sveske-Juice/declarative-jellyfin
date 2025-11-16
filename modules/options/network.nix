@@ -68,7 +68,13 @@ with lib; {
         If left empty, only the server's subnet is considered to be on the local network.
       '';
     };
-    localNetworkAddresses = mkEnableOption "UNIMPLEMENTED";
+    localNetworkAddresses = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = ''
+        List of interface addresses which Jellyfin will bind to. If empty, all interfaces will be used.
+      '';
+    };
     knownProxies = mkOption {
       type = with types; listOf str;
       description = "A list of known proxies";
