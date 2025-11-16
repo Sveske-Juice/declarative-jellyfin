@@ -542,6 +542,7 @@ in {
         configDir
         cacheDir
         logDir
+        package
         ;
     };
 
