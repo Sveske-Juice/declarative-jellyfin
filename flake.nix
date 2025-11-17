@@ -47,9 +47,9 @@
           )
         )
       );
-  in {
+  in rec {
     # for `nix fmt`
-    formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
+    formatter = eachSystem (pkgs: treefmtEval.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper);
 
     nixosModules = rec {
       declarative-jellyfin = import ./modules;
@@ -73,9 +73,25 @@
 
       run-tests = {
         type = "app";
-        program = builtins.toString (pkgs.writeShellScript "run-tests.sh" ''
-          ${pkgs.lib.getExe nix-fast-build.packages.${pkgs.system}.default} $@
-        '');
+        program = builtins.toString (
+          pkgs.writeShellScript "run-tests.sh" ''
+            ${pkgs.lib.getExe nix-fast-build.packages.${pkgs.stdenv.hostPlatform.system}.default} $@
+          ''
+        );
+      };
+
+      update-actions = {
+        type = "app";
+        program = builtins.toString (
+          pkgs.writeShellScript "update-actions.sh" ''
+            cat ${
+              import ./gen-forgejo-tests.nix {
+                inherit pkgs;
+                checks = checks."x86_64-linux"; # Server runs x86 so actions are only for that
+              }
+            } > .forgejo/workflows/actions.yml
+          ''
+        );
       };
     });
 

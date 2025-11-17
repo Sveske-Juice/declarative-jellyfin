@@ -33,6 +33,7 @@ in {
 
         for node in machines:
           node.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
+          node.wait_for_console_text("Main: Startup complete") # later calls will catch this and fail test unless its also here
 
         # Make sure they created 1 backup
         for node in machines:
