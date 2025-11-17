@@ -263,6 +263,10 @@ with lib; let
       maxParentalAgeRating = mkOption {
         type = with types; nullOr int;
         default = null;
+        description = ''
+          > ![WARNING]
+          Deprecated. Use `users.*.maxParentalRatingSubScore` instead.
+        '';
       };
 
       maxParentalRatingSubScore = mkOption {

@@ -208,7 +208,7 @@ with lib; let
             if !(builtins.isNull userOpts.maxParentalAgeRating)
             then
               builtins.abort
-              "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${userOpts.username} still has `maxParentalAgeRating` defined."
+              "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${username} still has `maxParentalAgeRating` defined."
             else userOpts.maxParentalRatingSubScore;
         }
       )
