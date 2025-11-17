@@ -142,6 +142,9 @@ The maximum number of active sessions the user can have at once. 0 for unlimited
 **Default**: `0`
 
 ### users.*.maxParentalAgeRating
+> [!WARNING]
+Deprecated. Use `users.*.maxParentalRatingSubScore` instead.
+
 
 **Type**: null or signed integer
 
