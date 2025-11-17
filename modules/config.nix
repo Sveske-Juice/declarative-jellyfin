@@ -114,6 +114,7 @@ with lib; let
     "permissions"
     "preferences"
     "_module"
+    "maxParentalAgeRating"
   ];
   options = map (camelcase: toPascalCase.fromString camelcase) (
     lib.attrsets.mapAttrsToList (key: _value: "${key}") (
@@ -203,6 +204,10 @@ with lib; let
             else if userOpts.hashedPassword != null
             then "$(echo -n '${userOpts.hashedPassword}')"
             else "$(${genhash}/bin/genhash -k \"${userOpts.password}\" -i 210000 -l 128 -u)";
+          maxParentalRatingSubScore =
+            if !(builtins.isNull userOpts.maxParentalAgeRating)
+            then lib.warn "`users.*.maxParentalAgeRating` is deprecated. Use `users.*.maxParentalRatingSubScore` instead." userOpts.maxParentalAgeRating
+            else userOpts.maxParentalRatingSubScore;
         }
       )
       nonDBOptions;

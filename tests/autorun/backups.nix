@@ -41,6 +41,7 @@ in {
 
         # Restart and see if another is created
         for node in machines:
+          node.wait_for_console_text("Main: Startup complete") # jellyfin ignores signals while starting
           node.succeed("systemctl restart jellyfin")
           # init tag should be removed
           node.succeed("! test -e /var/log/jellyfin-init-done")
@@ -55,6 +56,7 @@ in {
 
         # Make sure backups are rotated
         for node in machines:
+          node.wait_for_console_text("Main: Startup complete") # jellyfin ignores signals while starting
           node.succeed("systemctl restart jellyfin")
           # init tag should be removed
           node.succeed("! test -e /var/log/jellyfin-init-done")

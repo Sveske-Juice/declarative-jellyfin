@@ -258,7 +258,12 @@ with lib; let
         example = 5;
         default = 0;
       };
+      # DEPRECATED: Remove Soon
       maxParentalAgeRating = mkOption {
+        type = with types; nullOr int;
+        default = null;
+      };
+      maxParentalRatingSubScore = mkOption {
         type = with types; nullOr int;
         default = null;
       };
@@ -388,7 +393,7 @@ in {
     example = {
       Admin = {
         password = "123";
-        maxParentalAgeRating = 12;
+        maxParentalRatingSubScore = 12;
       };
     };
   };
