@@ -1,0 +1,40 @@
+diff --git a/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs b/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
+index 570d6cb9b7..f9696ade01 100644
+--- a/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
++++ b/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
+@@ -23,11 +23,7 @@ public static class StorageHelper
+     /// <param name="logger">Logger.</param>
+     public static void TestCommonPathsForStorageCapacity(IApplicationPaths applicationPaths, ILogger logger)
+     {
+-        TestDataDirectorySize(applicationPaths.DataPath, logger, TwoGigabyte);
+-        TestDataDirectorySize(applicationPaths.LogDirectoryPath, logger, FiveHundredAndTwelveMegaByte);
+-        TestDataDirectorySize(applicationPaths.CachePath, logger, TwoGigabyte);
+-        TestDataDirectorySize(applicationPaths.ProgramDataPath, logger, TwoGigabyte);
+-        TestDataDirectorySize(applicationPaths.TempDirectory, logger, FiveHundredAndTwelveMegaByte);
++        return;
+     }
+ 
+     /// <summary>
+@@ -71,21 +67,7 @@ public static class StorageHelper
+     /// <exception cref="InvalidOperationException">Thrown when the threshold is not available on the underlying storage.</exception>
+     private static void TestDataDirectorySize(string path, ILogger logger, long threshold = -1)
+     {
+-        logger.LogDebug("Check path {TestPath} for storage capacity", path);
+-        Directory.CreateDirectory(path);
+-
+-        var drive = new DriveInfo(path);
+-        if (threshold != -1 && drive.AvailableFreeSpace < threshold)
+-        {
+-            throw new InvalidOperationException($"The path `{path}` has insufficient free space. Available: {HumanizeStorageSize(drive.AvailableFreeSpace)}, Required: {HumanizeStorageSize(threshold)}.");
+-        }
+-
+-        logger.LogInformation(
+-            "Storage path `{TestPath}` ({StorageType}) successfully checked with {FreeSpace} free which is over the minimum of {MinFree}.",
+-            path,
+-            drive.DriveType,
+-            HumanizeStorageSize(drive.AvailableFreeSpace),
+-            HumanizeStorageSize(threshold));
++        return;
+     }
+ 
+     /// <summary>

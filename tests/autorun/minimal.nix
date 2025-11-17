@@ -3,7 +3,7 @@
   port = 8096;
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       machine = {...}: {
@@ -16,6 +16,7 @@ in {
         # Doesn't get more minimal than this
         services.declarative-jellyfin = {
           enable = true;
+          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
         };
       };

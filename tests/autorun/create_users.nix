@@ -2,7 +2,7 @@
   name = "createusers";
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       machine = {pkgs, ...}: {
@@ -19,6 +19,7 @@ in {
 
         services.declarative-jellyfin = {
           enable = true;
+          package = import ../../patched-jellyfin.nix pkgs;
           users = {
             Admin = {
               mutable = false;

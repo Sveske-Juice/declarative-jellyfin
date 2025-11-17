@@ -2,7 +2,7 @@
   name = "minimal";
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       machine = {...}: {

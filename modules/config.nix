@@ -114,6 +114,7 @@ with lib; let
     "permissions"
     "preferences"
     "_module"
+    "maxParentalAgeRating"
   ];
   options = map (camelcase: toPascalCase.fromString camelcase) (
     lib.attrsets.mapAttrsToList (key: _value: "${key}") (
@@ -203,6 +204,12 @@ with lib; let
             else if userOpts.hashedPassword != null
             then "$(echo -n '${userOpts.hashedPassword}')"
             else "$(${genhash}/bin/genhash -k \"${userOpts.password}\" -i 210000 -l 128 -u)";
+          maxParentalRatingSubScore =
+            if !(builtins.isNull userOpts.maxParentalAgeRating)
+            then
+              builtins.abort
+              "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${userOpts.username} still has `maxParentalAgeRating` defined."
+            else userOpts.maxParentalRatingSubScore;
         }
       )
       nonDBOptions;
@@ -373,24 +380,21 @@ with lib; let
         lib.optionalString cfg.system.isStartupWizardCompleted
         # bash
         ''
-          # We need to generate a valid migrations.xml file if it's a first run and
-          # `services.declarative-jellyfin.system.IsStartupWizardCompleted=true`
-          # otherwise jellyfin will try and run deprecated/old migrations, see:
-          # https://github.com/jellyfin/jellyfin/issues/12254
-          if [ ! -f "${config.services.jellyfin.configDir}/migrations.xml" ]; then
-            echo "First time run and no migrations.xml. We run jellyfin once to generate it..."
+          # migrations.xml is no longer generated. We now check if migrations have run
+          # by checking if the migrations table exists in the db
+          # https://github.com/Sveske-Juice/declarative-jellyfin/issues/17
+          if [ -z "$(${sq} "SELECT name FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory'")" ]; then
+            echo "First time run and no migrations table in DB. We run jellyfin once to generate it..."
             echo "Starting jellyfin with IsStartupWizardCompleted = false"
             ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
             ${jellyfin-exec} & disown
-            echo "Waiting for jellyfin to generate migrations.xml"
-            until [ -f "${config.services.jellyfin.configDir}/migrations.xml" ]
+            echo "Waiting for jellyfin to run migrations"
+            until [ -n "$(${sq} "SELECT name FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory'")" ];
             do
               sleep 1
             done
-            sleep 5
-            echo "migrations.xml generated! Restarting jellyfin..."
-            echo "migrations.xml:"
-            cat "${config.services.jellyfin.configDir}/migrations.xml"
+            sleep 15
+            echo "Migrations ran! Restarting jellyfin..."
             ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
             echo "Waiting for jellyfin to shut down properly"
             while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
