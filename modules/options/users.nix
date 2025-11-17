@@ -258,11 +258,13 @@ with lib; let
         example = 5;
         default = 0;
       };
-      # DEPRECATED: Remove Soon
+
+      # DEPRECATED: Remove after a while
       maxParentalAgeRating = mkOption {
         type = with types; nullOr int;
         default = null;
       };
+
       maxParentalRatingSubScore = mkOption {
         type = with types; nullOr int;
         default = null;

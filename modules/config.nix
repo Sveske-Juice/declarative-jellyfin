@@ -206,7 +206,9 @@ with lib; let
             else "$(${genhash}/bin/genhash -k \"${userOpts.password}\" -i 210000 -l 128 -u)";
           maxParentalRatingSubScore =
             if !(builtins.isNull userOpts.maxParentalAgeRating)
-            then lib.warn "`users.*.maxParentalAgeRating` is deprecated. Use `users.*.maxParentalRatingSubScore` instead." userOpts.maxParentalAgeRating
+            then
+              builtins.abort
+              "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${userOpts.username} still has `maxParentalAgeRating` defined."
             else userOpts.maxParentalRatingSubScore;
         }
       )
