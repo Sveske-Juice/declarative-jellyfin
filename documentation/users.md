@@ -147,6 +147,12 @@ The maximum number of active sessions the user can have at once. 0 for unlimited
 
 **Default**: `<null>`
 
+### users.*.maxParentalRatingSubScore
+
+**Type**: null or signed integer
+
+**Default**: `<null>`
+
 ### users.*.mustUpdatePassword
 
 **Type**: signed integer
