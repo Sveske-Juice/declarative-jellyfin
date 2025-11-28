@@ -36,7 +36,6 @@
                 nix run .#checks.${pkgs.stdenv.hostPlatform.system}.${name}.driver
               '';
               timeout-minutes = 5;
-              continue-on-error = true;
             })
             checks);
       };

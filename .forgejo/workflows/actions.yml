@@ -8,57 +8,47 @@ jobs:
       - name: Format Check
         run: |
           nix fmt -- --ci
-      - continue-on-error: true
-        name: backups
+      - name: backups
         run: |
           nix run .#checks.x86_64-linux.backups.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: branding
+      - name: branding
         run: |
           nix run .#checks.x86_64-linux.branding.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: createusers
+      - name: createusers
         run: |
           nix run .#checks.x86_64-linux.createusers.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: libraries
+      - name: libraries
         run: |
           nix run .#checks.x86_64-linux.libraries.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: migrations
+      - name: migrations
         run: |
           nix run .#checks.x86_64-linux.migrations.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: minimal
+      - name: minimal
         run: |
           nix run .#checks.x86_64-linux.minimal.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: nowizard
+      - name: nowizard
         run: |
           nix run .#checks.x86_64-linux.nowizard.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: to_pascal_test
+      - name: to_pascal_test
         run: |
           nix run .#checks.x86_64-linux.to_pascal_test.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: verify-examples
+      - name: verify-examples
         run: |
           nix run .#checks.x86_64-linux.verify-examples.driver
         timeout-minutes: 5
-      - continue-on-error: true
-        name: xmltests
+      - name: xmltests
         run: |
           nix run .#checks.x86_64-linux.xmltests.driver
         timeout-minutes: 5
-  01_generate_documentation:
+  02_generate_documentation:
     if: forge.actor != 'baritone' && forge.ref_name == 'main'
     needs: run_tests
     runs-on: native
