@@ -119,7 +119,7 @@ in {
           lock = builtins.fromJSON (builtins.readFile ../../jellyfin-lock.json);
         in {
           inherit (lock) version;
-          src = fetchFromGitHub lock.src;
+          src = pkgs.fetchFromGitHub lock.src;
         }
       );
       defaultText = "pkgs.jellyfin";
