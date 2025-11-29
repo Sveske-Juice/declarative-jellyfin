@@ -1,7 +1,3 @@
-> [!WARNING]
-Jellyfin 10.11 is NOT SUPPORTED. 
-If you plan on using this project then lock the jellyfin package to any version before 10.11.
-
 # Declarative Jellyfin
 
 ![workflows badge](https://git.spoodythe.one/spoody/declarative-jellyfin/badges/workflows/run-tests.yml/badge.svg?branch=main)
