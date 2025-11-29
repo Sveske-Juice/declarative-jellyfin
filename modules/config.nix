@@ -504,6 +504,7 @@ with lib; let
       ${pkgs.sqlite}/bin/sqlite3 "${config.services.jellyfin.dataDir}/data/${dbname}" < "$dbcmds"
 
       touch '${jellyfinDoneTag}'
+      ${jellyfin-exec}
     '';
 in {
   config = mkIf cfg.enable {
@@ -560,8 +561,15 @@ in {
       after = ["systemd-tmpfiles-setup.service"];
       serviceConfig = {
         TimeoutStartSec = 300;
-        ExecStartPre = "${jellyfin-init}/bin/jellyfin-init";
-        ExecStart = jellyfin-exec;
+        # HACK: this is a quick hack for the fix-root PR (#16)
+        # remove this after a while and move jellyfin-init to ExecStartPre
+        ExecStartPre = "+${pkgs.writeShellScriptBin "temp-perm-fix" ''
+          chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
+          chmod -R 750 ${cfg.dataDir}
+          chown -R ${cfg.user}:${cfg.group} ${cfg.cacheDir}
+          chmod -R 750 ${cfg.cacheDir}
+        ''}/bin/temp-perm-fix";
+        ExecStart = lib.mkForce "${jellyfin-init}/bin/jellyfin-init";
         ExecStop = "+/bin/sh -c 'rm -rf ${jellyfinDoneTag}'";
       };
     };
