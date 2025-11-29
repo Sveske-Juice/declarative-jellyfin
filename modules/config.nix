@@ -4,50 +4,49 @@
   pkgs,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.services.declarative-jellyfin;
-  genhash = import ./pbkdf2-sha512.nix { inherit pkgs; };
-  djLib = import ../lib { nixpkgs = pkgs; };
+  genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
+  djLib = import ../lib {nixpkgs = pkgs;};
   toXml' = djLib.toXMLGeneric;
   inherit (djLib) toPascalCase;
   isStrList = x: all isString x;
-  prepass =
-    x:
-    if (isAttrs x) then
-      if !(hasAttr "tag" x) then
+  prepass = x:
+    if (isAttrs x)
+    then
+      if !(hasAttr "tag" x)
+      then
         attrsets.mapAttrsToList (tag: value: {
           inherit tag;
           content = prepass value;
-        }) x
-      else if (hasAttr "content" x) then
-        {
-          inherit (x) tag;
-          content = prepass x.content;
-        }
-      else
+        })
         x
-    else if (isList x) then
-      if (isStrList x) then
+      else if (hasAttr "content" x)
+      then {
+        inherit (x) tag;
+        content = prepass x.content;
+      }
+      else x
+    else if (isList x)
+    then
+      if (isStrList x)
+      then
         (map (content: {
-          tag = "string";
-          inherit content;
-        }) x)
-      else
-        map prepass x
-    else
-      x;
+            tag = "string";
+            inherit content;
+          })
+          x)
+      else map prepass x
+    else x;
 
-  toXml =
-    tag: x:
-    (toXml' {
-      inherit tag;
-      attrib = {
-        "xmlns:xsi" = "http://www.w3.org/2001/XMLSchema-instance";
-        "xmlns:xsd" = "http://www.w3.org/2001/XMLSchema";
-      };
-      content = prepass x;
-    });
+  toXml = tag: x: (toXml' {
+    inherit tag;
+    attrib = {
+      "xmlns:xsi" = "http://www.w3.org/2001/XMLSchema-instance";
+      "xmlns:xsd" = "http://www.w3.org/2001/XMLSchema";
+    };
+    content = prepass x;
+  });
   log = "/var/log/jellyfin.txt";
   print = msg: ''echo "${msg}" | tee --append ${log}'';
   jellyfinConfigFiles = {
@@ -120,34 +119,30 @@ let
   options = map (camelcase: toPascalCase.fromString camelcase) (
     lib.attrsets.mapAttrsToList (key: _value: "${key}") (
       (builtins.removeAttrs (
-        (import ./options/users.nix { inherit lib; })
+          (import ./options/users.nix {inherit lib;})
         .options.services.declarative-jellyfin.users.type.getSubOptions
-        [ ]
-      ) nonDBOptions)
+          []
+        )
+        nonDBOptions)
       // {
         username = null;
       }
     )
   );
 
-  sqliteFormat =
-    key: value:
-    if
-      (isBool value) # bool -> 1 or 0
+  sqliteFormat = key: value:
+    if (isBool value) # bool -> 1 or 0
     then
-      if value then "1" else "0"
-    else if
-      (value == null) # null -> NULL
-    then
-      "NULL"
-    else if
-      (key == "subtitleMode") # subtitleMode -> 0 | 1 | 2 | 3 | 4
-    then
-      subtitleModes.${value}
-    else if (isString value) then
-      "'${value}'"
-    else
-      value;
+      if value
+      then "1"
+      else "0"
+    else if (value == null) # null -> NULL
+    then "NULL"
+    else if (key == "subtitleMode") # subtitleMode -> 0 | 1 | 2 | 3 | 4
+    then subtitleModes.${value}
+    else if (isString value)
+    then "'${value}'"
+    else value;
   sqliteFormatAttrs = attrset: builtins.mapAttrs (name: value: sqliteFormat name value) attrset;
 
   # This function replicates the LibraryManager.GetNewItemId() from the jellyfin source code.
@@ -159,67 +154,63 @@ let
   # Don't ask me why they do it like this 💀
   genfolderuuid =
     pkgs.writeShellScriptBin "genfolderuuid"
-      # bash
-      ''
-        key="root\\default\\$1"
-        type="MediaBrowser.Controller.Entities.CollectionFolder"
+    # bash
+    ''
+      key="root\\default\\$1"
+      type="MediaBrowser.Controller.Entities.CollectionFolder"
 
-        # Concatenate type.FullName + key
-        input="''${type}''${key}"
+      # Concatenate type.FullName + key
+      input="''${type}''${key}"
 
-        # Convert to UTF-16LE and hash with MD5
-        md5hex=$(echo -n "$input" | ${pkgs.iconv}/bin/iconv -f UTF-8 -t UTF-16LE | md5sum | ${pkgs.gawk}/bin/awk '{print $1}')
+      # Convert to UTF-16LE and hash with MD5
+      md5hex=$(echo -n "$input" | ${pkgs.iconv}/bin/iconv -f UTF-8 -t UTF-16LE | md5sum | ${pkgs.gawk}/bin/awk '{print $1}')
 
-        # Format as GUID with .NET byte order (little-endian for first 3 fields)
-        a="''${md5hex:6:2}''${md5hex:4:2}''${md5hex:2:2}''${md5hex:0:2}"
-        b="''${md5hex:10:2}''${md5hex:8:2}"
-        c="''${md5hex:14:2}''${md5hex:12:2}"
-        d="''${md5hex:16:4}"
-        e="''${md5hex:20:12}"
+      # Format as GUID with .NET byte order (little-endian for first 3 fields)
+      a="''${md5hex:6:2}''${md5hex:4:2}''${md5hex:2:2}''${md5hex:0:2}"
+      b="''${md5hex:10:2}''${md5hex:8:2}"
+      c="''${md5hex:14:2}''${md5hex:12:2}"
+      d="''${md5hex:16:4}"
+      e="''${md5hex:20:12}"
 
-        guid="''${a}-''${b}-''${c}-''${d:0:4}-''${d:4:8}''${e}"
+      guid="''${a}-''${b}-''${c}-''${d:0:4}-''${d:4:8}''${e}"
 
-        # Lowercase to match .NET format
-        echo "$(echo $guid | tr '[:upper:]' '[:lower:]')"
-      '';
+      # Lowercase to match .NET format
+      echo "$(echo $guid | tr '[:upper:]' '[:lower:]')"
+    '';
 
   optionsNoId = lib.lists.remove "Id" (lib.lists.remove "InternalId" options);
-  genUser =
-    index: username: userOpts:
-    let
-      mutatedUser = builtins.removeAttrs (
+  genUser = index: username: userOpts: let
+    mutatedUser =
+      builtins.removeAttrs (
         userOpts
         // {
           inherit username;
           id =
-            if userOpts.id != null then
-              userOpts.id
-            else
-              "$(${pkgs.libuuid}/bin/uuidgen | ${pkgs.coreutils}/bin/tr '[:lower:]' '[:upper:]')";
+            if userOpts.id != null
+            then userOpts.id
+            else "$(${pkgs.libuuid}/bin/uuidgen | ${pkgs.coreutils}/bin/tr '[:lower:]' '[:upper:]')";
           internalId =
-            if userOpts.internalId != null then
-              userOpts.internalId
-            else
-              "$(($maxIndex+${toString (index + 1)}))";
+            if userOpts.internalId != null
+            then userOpts.internalId
+            else "$(($maxIndex+${toString (index + 1)}))";
           password =
-            if userOpts.hashedPasswordFile != null then
-              "$(${pkgs.coreutils}/bin/cat \"${userOpts.hashedPasswordFile}\")"
-            else if userOpts.hashedPassword != null then
-              "$(echo -n '${userOpts.hashedPassword}')"
-            else
-              "$(${genhash}/bin/genhash -k \"${userOpts.password}\" -i 210000 -l 128 -u)";
+            if userOpts.hashedPasswordFile != null
+            then "$(${pkgs.coreutils}/bin/cat \"${userOpts.hashedPasswordFile}\")"
+            else if userOpts.hashedPassword != null
+            then "$(echo -n '${userOpts.hashedPassword}')"
+            else "$(${genhash}/bin/genhash -k \"${userOpts.password}\" -i 210000 -l 128 -u)";
           maxParentalRatingSubScore =
-            if !(builtins.isNull userOpts.maxParentalAgeRating) then
-              builtins.abort "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${username} still has `maxParentalAgeRating` defined."
-            else
-              userOpts.maxParentalRatingSubScore;
+            if !(builtins.isNull userOpts.maxParentalAgeRating)
+            then builtins.abort "`maxParentalAgeRating` has been renamed to `maxParentalRatingSubScore`. The user ${username} still has `maxParentalAgeRating` defined."
+            else userOpts.maxParentalRatingSubScore;
         }
-      ) nonDBOptions;
-      userWithNoId = removeAttrs mutatedUser [
-        "id"
-        "internalId"
-      ];
-    in
+      )
+      nonDBOptions;
+    userWithNoId = removeAttrs mutatedUser [
+      "id"
+      "internalId"
+    ];
+  in
     # bash
     ''
       userExists=$(${sq} "SELECT 1 FROM Users WHERE Username = '${mutatedUser.username}'")
@@ -233,10 +224,9 @@ let
 
       # If the user is mutable, only insert the user if it doesn't already exist, otherwise just overwrite
       if [ ${
-        if userOpts.mutable then
-          "-z $userExists" # user doesn't exist
-        else
-          "-n \"true\""
+        if userOpts.mutable
+        then "-z $userExists" # user doesn't exist
+        else "-n \"true\""
       } ]; then
         sql="INSERT INTO Users (${concatStringsSep "," optionsNoId}, InternalId, Id) VALUES(${concatStringsSep "," (map toString (attrValues (sqliteFormatAttrs userWithNoId)))},$(($maxIndex+${toString (index + 1)})), $(echo "'$userId'"))"
         # User already exists - don't insert a new Id, just re-use the one already present,
@@ -244,259 +234,283 @@ let
         if [ -n "$userExists" ]; then
           ${print "Excluding insertion of Id/InternalId, since user already exists in DB"}
            sql="UPDATE Users SET ${
-             concatStringsSep "," (
-               map (
-                 {
-                   fst,
-                   snd,
-                 }:
-                 # bash
-                 ''${fst} = ${toString (sqliteFormat fst snd)}''
-               ) (lib.lists.zipLists optionsNoId (attrValues userWithNoId))
-             )
-           } WHERE Username = '${mutatedUser.username}'"
+        concatStringsSep "," (
+          map (
+            {
+              fst,
+              snd,
+            }:
+            # bash
+            ''${fst} = ${toString (sqliteFormat fst snd)}''
+          ) (lib.lists.zipLists optionsNoId (attrValues userWithNoId))
+        )
+      } WHERE Username = '${mutatedUser.username}'"
         fi
         echo "''${sql};" >> "$dbcmds"
 
         # Handle admin user preferences
-        ${lib.optionalString (userOpts.preferences.enabledLibraries != [ ])
-          # bash
-          ''
-            echo "REPLACE INTO Preferences(Kind, RowVersion, UserId, Value) VALUES(${toString preferenceKindToDBInteger.enabledFolders}, 0, $(echo "'$userId'"),
-            '${
-              concatStringsSep "," (
-                map (
-                  enabledLib: "$(${genfolderuuid}/bin/genfolderuuid \"${enabledLib}\")"
-                ) userOpts.preferences.enabledLibraries
+        ${
+        lib.optionalString (userOpts.preferences.enabledLibraries != [])
+        # bash
+        ''
+          echo "REPLACE INTO Preferences(Kind, RowVersion, UserId, Value) VALUES(${toString preferenceKindToDBInteger.enabledFolders}, 0, $(echo "'$userId'"),
+          '${
+            concatStringsSep "," (
+              map (
+                enabledLib: "$(${genfolderuuid}/bin/genfolderuuid \"${enabledLib}\")"
               )
-            }');" >> "$dbcmds"
-          ''
-        }
+              userOpts.preferences.enabledLibraries
+            )
+          }');" >> "$dbcmds"
+        ''
+      }
 
         # Handle user permissions
         ${concatStringsSep "\n" (
-          lib.attrsets.mapAttrsToList (
-            permission: enabled:
-            # bash
-            ''
-              sql="REPLACE INTO Permissions (Kind, Value, UserId, Permission_Permissions_Guid, RowVersion) VALUES(${
-                toString permissionKindToDBInteger.${permission}
-              }, ${if enabled then "1" else "0"}, $(echo "'$userId'"), NULL, 0);"
-              echo "$sql" >> "$dbcmds"
-            '') userOpts.permissions
-        )}
+        lib.attrsets.mapAttrsToList (
+          permission: enabled:
+          # bash
+          ''
+            sql="REPLACE INTO Permissions (Kind, Value, UserId, Permission_Permissions_Guid, RowVersion) VALUES(${
+              toString permissionKindToDBInteger.${permission}
+            }, ${
+              if enabled
+              then "1"
+              else "0"
+            }, $(echo "'$userId'"), NULL, 0);"
+            echo "$sql" >> "$dbcmds"
+          ''
+        )
+        userOpts.permissions
+      )}
       fi
     '';
 
-  prepassedLibraries = builtins.mapAttrs (
-    name: value:
-    toPascalCase.fromAttrsRecursive (
-      value
-      // {
-        typeOptions = mapAttrsToList (name: value: {
-          typeOptions =
-            value
-            // (with value; {
-              type = name;
-              metadataFetcherOrder = metadataFetchers;
-              imageFetcherOrder = imageFetchers;
-            });
-        }) cfg.libraries."${name}".typeOptions;
-        pathInfos = builtins.map (x: { MediaPathInfo.Path = x; }) value.pathInfos;
-      }
+  prepassedLibraries =
+    builtins.mapAttrs (
+      name: value:
+        toPascalCase.fromAttrsRecursive (
+          value
+          // {
+            typeOptions =
+              mapAttrsToList (name: value: {
+                typeOptions =
+                  value
+                  // (with value; {
+                    type = name;
+                    metadataFetcherOrder = metadataFetchers;
+                    imageFetcherOrder = imageFetchers;
+                  });
+              })
+              cfg.libraries."${name}".typeOptions;
+            pathInfos = builtins.map (x: {MediaPathInfo.Path = x;}) value.pathInfos;
+          }
+        )
     )
-  ) cfg.libraries;
+    cfg.libraries;
 
   sq = "${pkgs.sqlite}/bin/sqlite3 \"${config.services.jellyfin.dataDir}/data/${dbname}\" --";
   dbcmdfile = "dbcommands.sql";
   jellyfinDoneTag = "${cfg.dataDir}/init-done";
-  configDerivations = mapAttrs (
-    file: cfg: pkgs.writeText file (toXml cfg.name cfg.content)
-  ) jellyfinConfigFiles;
+  configDerivations =
+    mapAttrs (
+      file: cfg: pkgs.writeText file (toXml cfg.name cfg.content)
+    )
+    jellyfinConfigFiles;
   jellyfin-exec = "${getExe config.services.jellyfin.package} --datadir '${config.services.jellyfin.dataDir}' --configdir '${config.services.jellyfin.configDir}' --cachedir '${config.services.jellyfin.cacheDir}' --logdir '${config.services.jellyfin.logDir}'";
   jellyfin-init =
     pkgs.writeShellScriptBin "jellyfin-init"
-      # bash
-      ''
-          set -euo pipefail
-          rm -rf "${jellyfinDoneTag}"
-          trap handle_error ERR
+    # bash
+    ''
+        set -euo pipefail
+        rm -rf "${jellyfinDoneTag}"
+        trap handle_error ERR
 
-          # u=rwx
-          # g=r-x
-          # o=---
-          umask 027
+        # u=rwx
+        # g=r-x
+        # o=---
+        umask 027
 
-          ${print "Log init"}
+        ${print "Log init"}
 
-          function handle_error() {
-            ${print "An ERROR occured during jellyfin-init!"}
-            ${print "Log file:\n$(cat \"${log}\")"}
-          }
+        function handle_error() {
+          ${print "An ERROR occured during jellyfin-init!"}
+          ${print "Log file:\n$(cat \"${log}\")"}
+        }
 
-          dbcmds="$(mktemp -d)/${dbcmdfile}"
-          touch "$dbcmds"
-          trap "rm -rf \"$dbcmds\"" exit
-          echo "BEGIN TRANSACTION;" > "$dbcmds"
+        dbcmds="$(mktemp -d)/${dbcmdfile}"
+        touch "$dbcmds"
+        trap "rm -rf \"$dbcmds\"" exit
+        echo "BEGIN TRANSACTION;" > "$dbcmds"
 
 
-            # Install each config
-            ${concatStringsSep "\n" (
-              mapAttrsToList (
-                file: path: ''install -Dm 640 "${path}" "${config.services.jellyfin.configDir}/${file}"''
-              ) configDerivations
-            )}
+          # Install each config
+          ${concatStringsSep "\n" (
+        mapAttrsToList (
+          file: path: ''install -Dm 640 "${path}" "${config.services.jellyfin.configDir}/${file}"''
+        )
+        configDerivations
+      )}
 
-            ${lib.optionalString cfg.system.isStartupWizardCompleted
-              # bash
-              ''
-                # Run jellyfin once to run potential migrations
-                echo "Running jellyfin once to ensure migrations are ran"
-                echo "Starting jellyfin with IsStartupWizardCompleted = false"
-                ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
-                ${jellyfin-exec} & disown
-                echo "Waiting for jellyfin to finish starting"
-                until ${lib.getExe pkgs.curl} "http://127.0.0.1:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
-                do
-                  sleep 1
-                done
-                sleep 15
-                echo "Migrations ran! Restarting jellyfin..."
-                ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
-                echo "Waiting for jellyfin to shut down properly"
-                while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
-                echo "Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true"
-                ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "true" "${config.services.jellyfin.configDir}/system.xml"
-              ''
-            }
+          ${
+        lib.optionalString cfg.system.isStartupWizardCompleted
+        # bash
+        ''
+          # Run jellyfin once to run potential migrations
+          echo "Running jellyfin once to ensure migrations are ran"
+          echo "Starting jellyfin with IsStartupWizardCompleted = false"
+          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
+          ${jellyfin-exec} & disown
+          echo "Waiting for jellyfin to finish starting"
+          until ${lib.getExe pkgs.curl} "http://127.0.0.1:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
+          do
+            sleep 1
+          done
+          sleep 15
+          echo "Migrations ran! Restarting jellyfin..."
+          ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
+          echo "Waiting for jellyfin to shut down properly"
+          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
+          echo "Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true"
+          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "true" "${config.services.jellyfin.configDir}/system.xml"
+        ''
+      }
 
-          # Make sure there is a database
-          if [ ! -e "${config.services.jellyfin.dataDir}/data/${dbname}" ]; then
-            ${print "No DB found. First time run detected. Launching jellyfin once to generate initial config + DB..."}
-            ${jellyfin-exec} & disown
+        # Make sure there is a database
+        if [ ! -e "${config.services.jellyfin.dataDir}/data/${dbname}" ]; then
+          ${print "No DB found. First time run detected. Launching jellyfin once to generate initial config + DB..."}
+          ${jellyfin-exec} & disown
 
-            ${print "Waiting for jellyfin finish startup"}
-            until [ -f "${config.services.jellyfin.dataDir}/data/${dbname}" ]
-            do
-              sleep 1
+          ${print "Waiting for jellyfin finish startup"}
+          until [ -f "${config.services.jellyfin.dataDir}/data/${dbname}" ]
+          do
+            sleep 1
+          done
+          sleep 5
+          ${print "Initial jellyfin setup done"}
+          ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
+          ${print "Waiting for jellyfin to shut down properly"}
+          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
+          cat "${config.services.jellyfin.configDir}/migrations.xml"
+          ${print "Jellyfin terminated"}
+        fi
+
+      # Rotating backups
+      ${
+        lib.optionalString cfg.backups
+        # bash
+        ''
+          # Make sure ${cfg.backupDir} exists
+          install -d -m 775 "${cfg.backupDir}"
+          backupName="${cfg.backupDir}/backup_$(date +%Y%m%d%H%M%S%N).tar.gz"
+
+          install -Dm 775 /dev/null "$backupName"
+          ${print "Creating backup: $backupName"}
+          ${pkgs.gnutar}/bin/tar -c --exclude "${removePrefix "/" cfg.backupDir}" -C / ${removePrefix "/" config.services.jellyfin.logDir} -C / ${removePrefix "/" config.services.jellyfin.dataDir} -C / ${removePrefix "/" config.services.jellyfin.configDir} -C / ${removePrefix "/" config.services.jellyfin.cacheDir} -f - | ${pkgs.pigz}/bin/pigz > "$backupName"
+
+          # Rotate backups
+          num_backups=$(ls -1 "${cfg.backupDir}" | wc -l)
+          num_backups_to_remove=$((num_backups - ${toString cfg.backupCount}))
+
+          if [ $num_backups_to_remove -gt 0 ]; then
+            old_backups=$(ls -1 "${cfg.backupDir}" | sort | head -n "$num_backups_to_remove")
+            for old_backup in $old_backups; do
+              rm "${cfg.backupDir}/$old_backup"
+              ${print "Purged backup: $old_backup"}
             done
-            sleep 5
-            ${print "Initial jellyfin setup done"}
-            ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
-            ${print "Waiting for jellyfin to shut down properly"}
-            while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
-            cat "${config.services.jellyfin.configDir}/migrations.xml"
-            ${print "Jellyfin terminated"}
           fi
+        ''
+      }
 
-        # Rotating backups
-        ${lib.optionalString cfg.backups
+      # Server id
+      ${
+        lib.optionalString (cfg.serverId != null) # bash
+        
+        ''
+          install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/data/device.txt"
+          echo -n "${cfg.serverId}" > "${config.services.jellyfin.dataDir}/data/device.txt"
+        ''
+      }
+
+        maxIndex=$(${sq} 'SELECT InternalId FROM Users ORDER BY InternalId DESC LIMIT 1')
+        if [ -z "$maxIndex" ]; then
+          maxIndex="1"
+        fi
+        ${print "Max index: $maxIndex"}
+
+        # Generate each user
+        ${concatStringsSep "\n" (
+        map
+        (
+          {
+            fst,
+            snd,
+          }:
+            genUser fst snd cfg.users.${snd}
+        )
+        (
+          lib.lists.zipLists (builtins.genList (x: x) (builtins.length (builtins.attrValues cfg.users))) (
+            builtins.attrNames cfg.users
+          )
+        )
+      )}
+
+        # Handle libraries
+        ${builtins.concatStringsSep "\n" (
+        mapAttrsToList (
+          name: value: let
+            path = "${config.services.jellyfin.dataDir}/root/default/${name}";
+          in
+            # bash
+            ''
+              install -Dm 740 '${pkgs.writeText "options.xml" (toXml "LibraryOptions" value)}' "${path}/options.xml"
+              touch "${path}/${value.ContentType}.collection"
+              # Create .mblink files foreach path in library
+              ${concatStringsSep "\n" (
+                map (
+                  pathInfo:
+                  # bash
+                  ''
+                    install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
+                    echo -n "${pathInfo.MediaPathInfo.Path}" > "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
+                  ''
+                )
+                value.PathInfos
+              )}
+            ''
+        )
+        prepassedLibraries
+      )}
+
+        # API Keys
+        ${concatStringsSep "\n" (
+        mapAttrsToList (
+          appName: value:
           # bash
           ''
-            # Make sure ${cfg.backupDir} exists
-            install -d -m 775 "${cfg.backupDir}"
-            backupName="${cfg.backupDir}/backup_$(date +%Y%m%d%H%M%S%N).tar.gz"
-
-            install -Dm 775 /dev/null "$backupName"
-            ${print "Creating backup: $backupName"}
-            ${pkgs.gnutar}/bin/tar -c --exclude "${removePrefix "/" cfg.backupDir}" -C / ${removePrefix "/" config.services.jellyfin.logDir} -C / ${removePrefix "/" config.services.jellyfin.dataDir} -C / ${removePrefix "/" config.services.jellyfin.configDir} -C / ${removePrefix "/" config.services.jellyfin.cacheDir} -f - | ${pkgs.pigz}/bin/pigz > "$backupName"
-
-            # Rotate backups
-            num_backups=$(ls -1 "${cfg.backupDir}" | wc -l)
-            num_backups_to_remove=$((num_backups - ${toString cfg.backupCount}))
-
-            if [ $num_backups_to_remove -gt 0 ]; then
-              old_backups=$(ls -1 "${cfg.backupDir}" | sort | head -n "$num_backups_to_remove")
-              for old_backup in $old_backups; do
-                rm "${cfg.backupDir}/$old_backup"
-                ${print "Purged backup: $old_backup"}
-              done
-            fi
+            echo "REPLACE INTO ApiKeys (DateCreated, DateLastActivity, Name, AccessToken) VALUES(time(), time(), '${appName}', ${
+              if value.key != null
+              then "'${value.key}'"
+              else "'$(cat \"${value.keyPath}\")'"
+            });" >> "$dbcmds"
           ''
-        }
+        )
+        cfg.apikeys
+      )}
 
-        # Server id
-        ${lib.optionalString (cfg.serverId != null) # bash
+      # Commit SQL commands
+      echo "COMMIT TRANSACTION;" >> "$dbcmds"
+      ${print "Executing SQL Commands:\n$(cat \"$dbcmds\")"}
+      ${pkgs.sqlite}/bin/sqlite3 "${config.services.jellyfin.dataDir}/data/${dbname}" < "$dbcmds"
 
-          ''
-            install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/data/device.txt"
-            echo -n "${cfg.serverId}" > "${config.services.jellyfin.dataDir}/data/device.txt"
-          ''
-        }
-
-          maxIndex=$(${sq} 'SELECT InternalId FROM Users ORDER BY InternalId DESC LIMIT 1')
-          if [ -z "$maxIndex" ]; then
-            maxIndex="1"
-          fi
-          ${print "Max index: $maxIndex"}
-
-          # Generate each user
-          ${concatStringsSep "\n" (
-            map
-              (
-                {
-                  fst,
-                  snd,
-                }:
-                genUser fst snd cfg.users.${snd}
-              )
-              (
-                lib.lists.zipLists (builtins.genList (x: x) (builtins.length (builtins.attrValues cfg.users))) (
-                  builtins.attrNames cfg.users
-                )
-              )
-          )}
-
-          # Handle libraries
-          ${builtins.concatStringsSep "\n" (
-            mapAttrsToList (
-              name: value:
-              let
-                path = "${config.services.jellyfin.dataDir}/root/default/${name}";
-              in
-              # bash
-              ''
-                install -Dm 740 '${pkgs.writeText "options.xml" (toXml "LibraryOptions" value)}' "${path}/options.xml"
-                touch "${path}/${value.ContentType}.collection"
-                # Create .mblink files foreach path in library
-                ${concatStringsSep "\n" (
-                  map (
-                    pathInfo:
-                    # bash
-                    ''
-                      install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
-                      echo -n "${pathInfo.MediaPathInfo.Path}" > "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
-                    '') value.PathInfos
-                )}
-              ''
-            ) prepassedLibraries
-          )}
-
-          # API Keys
-          ${concatStringsSep "\n" (
-            mapAttrsToList (
-              appName: value:
-              # bash
-              ''
-                echo "REPLACE INTO ApiKeys (DateCreated, DateLastActivity, Name, AccessToken) VALUES(time(), time(), '${appName}', ${
-                  if value.key != null then "'${value.key}'" else "'$(cat \"${value.keyPath}\")'"
-                });" >> "$dbcmds"
-              '') cfg.apikeys
-          )}
-
-        # Commit SQL commands
-        echo "COMMIT TRANSACTION;" >> "$dbcmds"
-        ${print "Executing SQL Commands:\n$(cat \"$dbcmds\")"}
-        ${pkgs.sqlite}/bin/sqlite3 "${config.services.jellyfin.dataDir}/data/${dbname}" < "$dbcmds"
-
-        touch '${jellyfinDoneTag}'
-      '';
-in
-{
+      touch '${jellyfinDoneTag}'
+    '';
+in {
   config = mkIf cfg.enable {
     services.jellyfin = {
       enable = true;
-      inherit (cfg)
+      inherit
+        (cfg)
         user
         group
         dataDir
@@ -513,15 +527,14 @@ in
     ];
 
     # Overwrite nixpkgs jellyfin module to include other dirs
-    systemd.tmpfiles.settings."jellyfinDirs" =
-      let
-        directoryMode = {
-          d = {
-            inherit (cfg) user group;
-            mode = "0750";
-          };
+    systemd.tmpfiles.settings."jellyfinDirs" = let
+      directoryMode = {
+        d = {
+          inherit (cfg) user group;
+          mode = "0750";
         };
-      in
+      };
+    in
       lib.mkForce {
         # create jellyfin-init log file
         "${log}" = {
@@ -544,9 +557,9 @@ in
       };
     systemd.services.jellyfin = {
       # make sure state dirs exists before starting
-      after = [ "systemd-tmpfiles-setup.service" ];
+      after = ["systemd-tmpfiles-setup.service"];
       serviceConfig = {
-        TimeoutStartSec=300;
+        TimeoutStartSec = 300;
         ExecStartPre = "${jellyfin-init}/bin/jellyfin-init";
         ExecStart = jellyfin-exec;
         ExecStop = "+/bin/sh -c 'rm -rf ${jellyfinDoneTag}'";
