@@ -309,7 +309,7 @@ let
 
   sq = "${pkgs.sqlite}/bin/sqlite3 \"${config.services.jellyfin.dataDir}/data/${dbname}\" --";
   dbcmdfile = "dbcommands.sql";
-  jellyfinDoneTag = "/var/log/jellyfin-init-done";
+  jellyfinDoneTag = "${cfg.dataDir}/init-done";
   configDerivations = mapAttrs (
     file: cfg: pkgs.writeText file (toXml cfg.name cfg.content)
   ) jellyfinConfigFiles;
@@ -327,17 +327,6 @@ let
           # o=---
           umask 027
 
-          # Setup directories
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.configDir}"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.logDir}"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.cacheDir}"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.dataDir}/metadata"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.dataDir}/playlists"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.dataDir}/wwwroot"
-          # install -d -m 750 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${config.services.jellyfin.dataDir}/plugins/configurations"
-          #
-          # install -Dm 774 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} /dev/null "${log}"
-
           ${print "Log init"}
 
           function handle_error() {
@@ -346,7 +335,7 @@ let
           }
 
           dbcmds="$(mktemp -d)/${dbcmdfile}"
-          install -Dm 774 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} /dev/null "$dbcmds"
+          touch "$dbcmds"
           trap "rm -rf \"$dbcmds\"" exit
           echo "BEGIN TRANSACTION;" > "$dbcmds"
 
@@ -354,8 +343,7 @@ let
             # Install each config
             ${concatStringsSep "\n" (
               mapAttrsToList (
-                file: path:
-                ''install -Dm 640 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${path}" "${config.services.jellyfin.configDir}/${file}"''
+                file: path: ''install -Dm 640 "${path}" "${config.services.jellyfin.configDir}/${file}"''
               ) configDerivations
             )}
 
@@ -366,7 +354,7 @@ let
                 echo "Running jellyfin once to ensure migrations are ran"
                 echo "Starting jellyfin with IsStartupWizardCompleted = false"
                 ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
-                ${pkgs.util-linux}/bin/runuser -u ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} -- ${jellyfin-exec} & disown
+                ${jellyfin-exec} & disown
                 echo "Waiting for jellyfin to finish starting"
                 until ${lib.getExe pkgs.curl} "http://127.0.0.1:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
                 do
@@ -406,10 +394,10 @@ let
           # bash
           ''
             # Make sure ${cfg.backupDir} exists
-            install -d -m 775 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} "${cfg.backupDir}"
+            install -d -m 775 "${cfg.backupDir}"
             backupName="${cfg.backupDir}/backup_$(date +%Y%m%d%H%M%S%N).tar.gz"
 
-            install -Dm 775 -o ${config.services.jellyfin.user} -g ${config.services.jellyfin.group} /dev/null "$backupName"
+            install -Dm 775 /dev/null "$backupName"
             ${print "Creating backup: $backupName"}
             ${pkgs.gnutar}/bin/tar -c --exclude "${removePrefix "/" cfg.backupDir}" -C / ${removePrefix "/" config.services.jellyfin.logDir} -C / ${removePrefix "/" config.services.jellyfin.dataDir} -C / ${removePrefix "/" config.services.jellyfin.configDir} -C / ${removePrefix "/" config.services.jellyfin.cacheDir} -f - | ${pkgs.pigz}/bin/pigz > "$backupName"
 
@@ -524,7 +512,8 @@ in
       cfg.network.publicHttpsPort
     ];
 
-    systemd.tmpfiles.settings =
+    # Overwrite nixpkgs jellyfin module to include other dirs
+    systemd.tmpfiles.settings."jellyfinDirs" =
       let
         directoryMode = {
           d = {
@@ -533,8 +522,8 @@ in
           };
         };
       in
-      {
-        # create log jellyfin-init log file
+      lib.mkForce {
+        # create jellyfin-init log file
         "${log}" = {
           f = {
             inherit (cfg) user group;
@@ -545,15 +534,19 @@ in
         "${cfg.configDir}" = directoryMode;
         "${cfg.logDir}" = directoryMode;
         "${cfg.cacheDir}" = directoryMode;
+        "${cfg.dataDir}" = directoryMode;
+        "${cfg.dataDir}/data" = directoryMode;
         "${cfg.dataDir}/metadata" = directoryMode;
         "${cfg.dataDir}/playlists" = directoryMode;
         "${cfg.dataDir}/wwwroot" = directoryMode;
+        "${cfg.dataDir}/plugins" = directoryMode;
         "${cfg.dataDir}/plugins/configurations" = directoryMode;
       };
     systemd.services.jellyfin = {
       # make sure state dirs exists before starting
       after = [ "systemd-tmpfiles-setup.service" ];
       serviceConfig = {
+        TimeoutStartSec=300;
         ExecStartPre = "${jellyfin-init}/bin/jellyfin-init";
         ExecStart = jellyfin-exec;
         ExecStop = "+/bin/sh -c 'rm -rf ${jellyfinDoneTag}'";

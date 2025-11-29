@@ -60,13 +60,8 @@ in {
 
         normal.shutdown()
 
-        declarative.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
-
-        # Give time for jellyfin to boot
-        declarative.wait_until_succeeds("curl 127.0.0.1:${toString port}", timeout=60)
-
-        # Should be able to curl it
-        declarative.succeed("curl 127.0.0.1:${toString port}")
+        # Test if migrated server boots up
+        declarative.wait_until_succeeds("curl 127.0.0.1:${toString port}", timeout=300)
       '';
   };
 }

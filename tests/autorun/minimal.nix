@@ -25,6 +25,9 @@ in {
     testScript =
       # py
       ''
+        print(machine.execute("sleep 10 && cat /etc/tmpfiles.d/jellyfinDirs.conf")[1])
+        print(machine.execute("ls -la /var/lib/jellyfin")[1])
+        print(machine.execute("ls -la /etc/tmpfiles.d")[1])
         machine.wait_for_unit("jellyfin.service")
         machine.succeed("ls -la /var/lib/jellyfin")
         # Make sure no errors are happening while jellyfin starts up
