@@ -114,7 +114,14 @@ in {
 
     package = mkOption {
       type = package;
-      default = pkgs.jellyfin;
+      default = pkgs.jellyfin.overrideAttrs (
+        let
+          lock = builtins.fromJSON (builtins.readFile ../../jellyfin-lock.json);
+        in {
+          inherit (lock) version;
+          src = fetchFromGitHub lock.src;
+        }
+      );
       defaultText = "pkgs.jellyfin";
       description = "Which package to use. Overrides `services.jellyfin.package`";
     };

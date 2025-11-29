@@ -1,0 +1,9 @@
+{
+  "version": "10.11.3",
+  "src": {
+    "owner": "jellyfin",
+    "repo": "jellyfin",
+    "rev": "921d7d336483c5fdee3dec3803eec1d5d7e6c705",
+    "hash": "sha256-xNQe0hjY1BjC1D+hYTj1Gv2jCpwhWJv9dlvY6K9jkSk="
+  }
+}

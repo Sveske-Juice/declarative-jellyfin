@@ -258,7 +258,18 @@ with lib; let
         example = 5;
         default = 0;
       };
+
+      # DEPRECATED: Remove after a while
       maxParentalAgeRating = mkOption {
+        type = with types; nullOr int;
+        default = null;
+        description = ''
+          > [!WARNING]
+          Deprecated. Use `users.*.maxParentalRatingSubScore` instead.
+        '';
+      };
+
+      maxParentalRatingSubScore = mkOption {
         type = with types; nullOr int;
         default = null;
       };
@@ -388,7 +399,7 @@ in {
     example = {
       Admin = {
         password = "123";
-        maxParentalAgeRating = 12;
+        maxParentalRatingSubScore = 12;
       };
     };
   };

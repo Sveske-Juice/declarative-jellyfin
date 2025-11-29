@@ -5,7 +5,7 @@
   backupCount = 2;
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
       ${name} = {...}: {
@@ -17,6 +17,7 @@ in {
 
         services.declarative-jellyfin = {
           enable = true;
+          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
           backups = true;
           inherit backupDir;
@@ -32,6 +33,7 @@ in {
 
         for node in machines:
           node.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
+          node.wait_for_console_text("Main: Startup complete") # later calls will catch this and fail test unless its also here
 
         # Make sure they created 1 backup
         for node in machines:
@@ -40,6 +42,7 @@ in {
 
         # Restart and see if another is created
         for node in machines:
+          node.succeed("sleep 45")
           node.succeed("systemctl restart jellyfin")
 
         for node in machines:
@@ -52,6 +55,7 @@ in {
 
         # Make sure backups are rotated
         for node in machines:
+          node.succeed("sleep 45")
           node.succeed("systemctl restart jellyfin")
 
         for node in machines:

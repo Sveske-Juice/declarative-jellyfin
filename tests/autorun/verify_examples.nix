@@ -5,7 +5,7 @@
   );
 in {
   inherit name;
-  test = pkgs.nixosTest {
+  test = pkgs.testers.nixosTest {
     inherit name;
     # Generate a VM Node foreach example file config
     nodes = pkgs.lib.attrsets.genAttrs exampleFiles (
@@ -16,6 +16,8 @@ in {
         ];
 
         virtualisation.memorySize = 1024;
+
+        services.declarative-jellyfin.package = import ../../patched-jellyfin.nix pkgs;
       }
     );
 

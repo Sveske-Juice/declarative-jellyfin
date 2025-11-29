@@ -1,0 +1,14 @@
+diff --git a/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs b/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
+index ce628a04d0..2bb10fc1af 100644
+--- a/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
++++ b/Jellyfin.Server.Implementations/StorageHelpers/StorageHelper.cs
+@@ -22,9 +22,6 @@ public static class StorageHelper
+     /// <param name="logger">Logger.</param>
+     public static void TestCommonPathsForStorageCapacity(IApplicationPaths applicationPaths, ILogger logger)
+     {
+-        TestDataDirectorySize(applicationPaths.DataPath, logger, TwoGigabyte);
+-        TestDataDirectorySize(applicationPaths.CachePath, logger, TwoGigabyte);
+-        TestDataDirectorySize(applicationPaths.ProgramDataPath, logger, TwoGigabyte);
+     }
+ 
+     /// <summary>
