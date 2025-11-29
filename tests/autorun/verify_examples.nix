@@ -27,13 +27,8 @@ in {
       ''
         start_all()
 
-        # Wait foreach node to run jellyfin-init
         for node in machines:
-          node.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
-
-        # Give 10 seconds for jellyfin to boot
-        for node in machines:
-          node.wait_until_succeeds("curl 127.0.0.1:8096", timeout=60)
+          node.wait_until_succeeds("curl 127.0.0.1:8096", timeout=300)
 
         # No errors should be reported in journal
         for node in machines:

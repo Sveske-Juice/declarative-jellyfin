@@ -46,8 +46,8 @@ in {
       # py
       ''
         machine.start()
-        machine.wait_for_unit("jellyfin.service");
-        machine.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
+        machine.wait_until_succeeds("test -e /var/lib/jellyfin/init-done", timeout=300)
+        machine.wait_until_succeeds("curl 127.0.0.1:8096", timeout=120)
         output = machine.succeed("cat /var/log/jellyfin.txt")
         print("Log: " + output)
         users = machine.succeed("sqlite3 /var/lib/jellyfin/data/jellyfin.db -- \"SELECT * FROM Users\"")

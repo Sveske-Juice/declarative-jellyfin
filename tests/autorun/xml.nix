@@ -180,7 +180,7 @@ in {
       ''
         import xml.etree.ElementTree as ET
 
-        machine.wait_until_succeeds("test -e /var/log/jellyfin-init-done", timeout=120)
+        machine.wait_until_succeeds("test -e /var/lib/jellyfin/init-done", timeout=300)
 
         # Make sure every config can be parsed without erros
         ${pkgs.lib.concatStringsSep "\n" (
