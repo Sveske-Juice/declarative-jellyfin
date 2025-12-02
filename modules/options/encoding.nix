@@ -332,6 +332,11 @@ with lib; {
 
       https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#configure-and-verify-lp-mode-on-linux
     '';
+    preferSystemNativeHwDecoder = mkEnableOption ''
+      Prefer OS native DXVA or VA-API hardware decoders
+
+      https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#tone-mapping-methods
+    '';
 
     enableSubtitleExtraction = mkOption {
       type = types.bool;

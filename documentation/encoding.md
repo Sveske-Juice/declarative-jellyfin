@@ -125,6 +125,16 @@ https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#co
 
 **Default**: `false`
 
+## encoding.preferSystemNativeHwDecoder
+Prefer OS native DXVA or VA-API hardware decoders
+
+https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#tone-mapping-methods
+.
+
+**Type**: boolean
+
+**Default**: `false`
+
 ## encoding.enableSegmentDeletion
 Whether to enable Delete old segments after they have been downloaded by the client.
 This prevents having to store the entire transcoded file on disk.
