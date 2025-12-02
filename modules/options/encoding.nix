@@ -332,6 +332,11 @@ with lib; {
 
       https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#configure-and-verify-lp-mode-on-linux
     '';
+    enableEnhancedNvdecDecoder = mkEnableOption ''
+      Enhanced NVDEC implementation, disable this option to use CUVID if you encounter decoding errors.
+
+      https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/nvidia#tone-mapping-methods
+    '';
     preferSystemNativeHwDecoder = mkEnableOption ''
       Prefer OS native DXVA or VA-API hardware decoders
 

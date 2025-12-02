@@ -125,6 +125,16 @@ https://jellyfin.org/docs/general/administration/hardware-acceleration/intel/#co
 
 **Default**: `false`
 
+## encoding.enableEnhancedNvdecDecoder
+Enhanced NVDEC implementation, disable this option to use CUVID if you encounter decoding errors.
+
+https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/nvidia#tone-mapping-methods
+.
+
+**Type**: booleann
+
+**Default**: `false`
+
 ## encoding.preferSystemNativeHwDecoder
 Prefer OS native DXVA or VA-API hardware decoders
 
