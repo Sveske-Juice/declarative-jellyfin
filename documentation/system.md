@@ -118,8 +118,15 @@ Whether to enable .
 
 **Default**: `false`
 
-## system.enableGroupingIntoCollections
-Whether to enable .
+## system.enableGroupingMoviesIntoCollections
+Whether to enable Automatically group movies into collections.
+
+**Type**: boolean
+
+**Default**: `false`
+
+## system.enableGroupingShowsIntoCollections
+Whether to enable Automatically group shows into collections.
 
 **Type**: boolean
 

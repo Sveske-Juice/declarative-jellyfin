@@ -302,7 +302,9 @@ in {
 
     enableFolderView = mkEnableOption "";
 
-    enableGroupingIntoCollections = mkEnableOption "";
+    enableGroupingMoviesIntoCollections = mkEnableOption "Automatically group movies into collections";
+
+    enableGroupingShowsIntoCollections = mkEnableOption "Automatically group shows into collections";
 
     displaySpecialsWithinSeasons = mkOption {
       type = types.bool;
