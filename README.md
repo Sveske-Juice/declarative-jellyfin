@@ -3,8 +3,12 @@
 ![workflows badge](https://git.spoodythe.one/spoody/declarative-jellyfin/badges/workflows/run-tests.yml/badge.svg?branch=main)
 ![issues badge](https://git.spoodythe.one/spoody/declarative-jellyfin/badges/issues.svg)
 
+> [!NOTE]
+Consider using [Jellar](https://github.com/venkyr77/jellarr) instead, as it solves some of the 
+fundamental problems this project have. You can read more about why in Jellar's README.
+
 This repository provides a Nix flake that allows for declarative configuration of
-Users, Libraries, Plugins, Settings, etc.
+Users, Libraries, Settings, etc.
 
 # Features
 * Declarative users
@@ -18,12 +22,6 @@ Users, Libraries, Plugins, Settings, etc.
     * Branding settings
 * Automatic backups
 * API keys
-
-> [!WARNING]
-This project is still in early stage, so beaware of bugs.
-It is highly recommended to manually take a backup of your jellyfin directory
-(usually `/var/lib/jellyfin`) if you're migrating, even though this script takes
-automatic backups before doing anything.
 
 # Documentation
 Automatically generated documentation outlining all options is available in [documentation.md](https://github.com/Sveske-Juice/declarative-jellyfin/blob/main/documentation/documentation.md)
@@ -244,8 +242,8 @@ Use `vainfo` from `libva-utils` to see the codec capabilities for your VA-API de
 ## Plugins
 
 > [!CAUTION]
-At the moment plugins are speculated to cause some bugs, most notably: https://git.spoodythe.one/spoody/declarative-jellyfin/issues/18.
-So at the moment it is recommended to install plugins imperatively through the GUI until declarative plugins are properly tested.
+At the moment only plugin repositories can be configured with this flake. For now you have 
+to imperatively install and configure plugins.
 
 Plugins are very difficult to manage declaratively, so for now you can only manage the plugin repositories declaratively
 
