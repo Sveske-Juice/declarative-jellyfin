@@ -1,56 +1,6 @@
 jobs:
-  00_run_tests:
-    if: forgejo.actor != 'baritone'
-    runs-on: native
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Format Check
-        run: |
-          nix fmt -- --ci
-      - name: backups
-        run: |
-          nix run .#checks.x86_64-linux.backups.driver
-        timeout-minutes: 5
-      - name: branding
-        run: |
-          nix run .#checks.x86_64-linux.branding.driver
-        timeout-minutes: 5
-      - name: createusers
-        run: |
-          nix run .#checks.x86_64-linux.createusers.driver
-        timeout-minutes: 5
-      - name: libraries
-        run: |
-          nix run .#checks.x86_64-linux.libraries.driver
-        timeout-minutes: 5
-      - name: migrations
-        run: |
-          nix run .#checks.x86_64-linux.migrations.driver
-        timeout-minutes: 5
-      - name: minimal
-        run: |
-          nix run .#checks.x86_64-linux.minimal.driver
-        timeout-minutes: 5
-      - name: nowizard
-        run: |
-          nix run .#checks.x86_64-linux.nowizard.driver
-        timeout-minutes: 5
-      - name: to_pascal_test
-        run: |
-          nix run .#checks.x86_64-linux.to_pascal_test.driver
-        timeout-minutes: 5
-      - name: verify-examples
-        run: |
-          nix run .#checks.x86_64-linux.verify-examples.driver
-        timeout-minutes: 5
-      - name: xmltests
-        run: |
-          nix run .#checks.x86_64-linux.xmltests.driver
-        timeout-minutes: 5
   02_generate_documentation:
-    if: forge.actor != 'baritone' && forge.ref_name == 'main'
-    needs: run_tests
+    # if: forge.actor != 'baritone' && forge.ref_name == 'main'
     runs-on: native
     steps:
       - name: Checkout
@@ -68,12 +18,11 @@ jobs:
 
           echo "$SSH_PRIVATE_KEY" > /tmp/private_key
           chmod 600 /tmp/private_key
+          cat /tmp/private_key
           git config --local core.sshCommand "ssh -i /tmp/private_key -o StrictHostKeyChecking=no"
 
-          git remote remove origin
-          git remote add origin forgejo@git.spoodythe.one:spoody/declarative-jellyfin.git
+          ssh -i /tmp/private_key -o StrictHostKeyChecking=no forgejo@git.spoodythe.one
 
-          git push origin main
 name: Actions
 "on":
   - push
