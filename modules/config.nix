@@ -362,7 +362,7 @@ with lib; let
           ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
           ${jellyfin-exec} & disown
           echo "Waiting for jellyfin to finish starting"
-          until ${lib.getExe pkgs.curl} "http://127.0.0.1:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
+          until ${lib.getExe pkgs.curl} "http://localhost:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
           do
             sleep 1
           done
