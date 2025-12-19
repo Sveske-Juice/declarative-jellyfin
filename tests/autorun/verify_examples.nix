@@ -16,7 +16,6 @@ in {
         ];
 
         virtualisation.memorySize = 1024;
-
       }
     );
 

@@ -131,7 +131,7 @@ in {
             "--add-flags"
             "--webdir=${cfg.jellyfin-web}/share/jellyfin-web"
           ];
-          patches = [ ../../remove-size-check.patch ];
+          patches = [../../remove-size-check.patch];
         }
       );
       defaultText = "pkgs.jellyfin";
@@ -140,14 +140,12 @@ in {
 
     jellyfin-ffmpeg = mkOption {
       type = package;
-      default =
-        let
-          lock = builtins.fromJSON (builtins.readFile ../../jellyfin-ffmpeg-lock.json);
-        in (
-          pkgs.callPackage ../../jellyfin-ffmpeg.nix {
-            inherit (lock) version hash;
-          }
-        );
+      default = let
+        lock = builtins.fromJSON (builtins.readFile ../../jellyfin-ffmpeg-lock.json);
+      in
+        pkgs.callPackage ../../jellyfin-ffmpeg.nix {
+          inherit (lock) version hash;
+        };
       defaultText = "pkgs.jellyfin-ffmpeg";
       description = "Which jellyfin-ffmpeg package to use";
     };

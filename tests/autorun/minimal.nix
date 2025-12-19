@@ -6,7 +6,7 @@ in {
   test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
-      machine = {config,...}: {
+      machine = {...}: {
         imports = [
           ../../modules/default.nix
         ];
