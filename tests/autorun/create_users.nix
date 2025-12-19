@@ -19,7 +19,6 @@ in {
 
         services.declarative-jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           users = {
             Admin = {
               mutable = false;

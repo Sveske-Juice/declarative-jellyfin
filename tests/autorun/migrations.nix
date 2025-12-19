@@ -12,10 +12,10 @@ in {
         ];
 
         virtualisation.memorySize = 1024;
+        virtualisation.diskSize = 4096;
 
         services.jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
         };
 
         environment.systemPackages = with pkgs; [
@@ -29,10 +29,10 @@ in {
         ];
 
         virtualisation.memorySize = 1024;
+        virtualisation.diskSize = 4096;
 
         services.declarative-jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
         };
       };

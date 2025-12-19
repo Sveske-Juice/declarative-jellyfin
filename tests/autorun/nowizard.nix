@@ -16,7 +16,6 @@ in {
         # Doesn't get more minimal than this
         services.declarative-jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
           system.isStartupWizardCompleted = true;
         };

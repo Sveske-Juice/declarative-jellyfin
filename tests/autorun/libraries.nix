@@ -27,7 +27,6 @@ in {
         services.declarative-jellyfin = {
           network.publicHttpPort = port;
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           system.isStartupWizardCompleted = true;
           openFirewall = true;
           users = {

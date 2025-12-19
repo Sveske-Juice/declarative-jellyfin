@@ -17,7 +17,6 @@ in {
 
         services.declarative-jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
           backups = true;
           inherit backupDir;

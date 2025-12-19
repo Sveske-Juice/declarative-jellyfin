@@ -6,7 +6,7 @@ in {
   test = pkgs.testers.nixosTest {
     inherit name;
     nodes = {
-      machine = {...}: {
+      machine = {config,...}: {
         imports = [
           ../../modules/default.nix
         ];
@@ -16,7 +16,6 @@ in {
         # Doesn't get more minimal than this
         services.declarative-jellyfin = {
           enable = true;
-          package = import ../../patched-jellyfin.nix pkgs;
           network.publicHttpPort = port;
         };
       };

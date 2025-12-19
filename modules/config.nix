@@ -317,7 +317,7 @@ with lib; let
       file: cfg: pkgs.writeText file (toXml cfg.name cfg.content)
     )
     jellyfinConfigFiles;
-  jellyfin-exec = "${getExe config.services.jellyfin.package} --datadir '${config.services.jellyfin.dataDir}' --configdir '${config.services.jellyfin.configDir}' --cachedir '${config.services.jellyfin.cacheDir}' --logdir '${config.services.jellyfin.logDir}'";
+  jellyfin-exec = "${getExe cfg.package} --datadir '${config.services.jellyfin.dataDir}' --configdir '${config.services.jellyfin.configDir}' --cachedir '${config.services.jellyfin.cacheDir}' --logdir '${config.services.jellyfin.logDir}'";
   jellyfin-init =
     pkgs.writeShellScriptBin "jellyfin-init"
     # bash
@@ -368,9 +368,9 @@ with lib; let
           done
           sleep 15
           echo "Migrations ran! Restarting jellyfin..."
-          ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
+          ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
           echo "Waiting for jellyfin to shut down properly"
-          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
+          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
           echo "Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true"
           ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "true" "${config.services.jellyfin.configDir}/system.xml"
         ''
@@ -388,9 +388,9 @@ with lib; let
           done
           sleep 5
           ${print "Initial jellyfin setup done"}
-          ${pkgs.procps}/bin/pkill -15 -f ${config.services.jellyfin.package}
+          ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
           ${print "Waiting for jellyfin to shut down properly"}
-          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${config.services.jellyfin.package} > /dev/null; do sleep 1 && printf "."; done
+          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
           cat "${config.services.jellyfin.configDir}/migrations.xml"
           ${print "Jellyfin terminated"}
         fi
@@ -518,7 +518,6 @@ in {
         configDir
         cacheDir
         logDir
-        package
         ;
     };
 

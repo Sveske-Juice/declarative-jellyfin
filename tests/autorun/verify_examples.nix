@@ -17,7 +17,6 @@ in {
 
         virtualisation.memorySize = 1024;
 
-        services.declarative-jellyfin.package = import ../../patched-jellyfin.nix pkgs;
       }
     );
 
