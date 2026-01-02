@@ -114,57 +114,29 @@ in {
 
     package = mkOption {
       type = package;
-      default = pkgs.jellyfin.overrideAttrs (
-        let
-          lock = builtins.fromJSON (builtins.readFile ../../jellyfin-lock.json);
-        in {
-          inherit (lock) version;
-          src = pkgs.fetchFromGitHub {
-            owner = "jellyfin";
-            repo = "jellyfin";
-            tag = "v${lock.version}";
-            inherit (lock) hash;
-          };
-          makeWrapperArgs = [
-            "--add-flags"
-            "--ffmpeg=${cfg.jellyfin-ffmpeg}/bin/ffmpeg"
-            "--add-flags"
-            "--webdir=${cfg.jellyfin-web}/share/jellyfin-web"
-          ];
-          patches = [../../remove-size-check.patch];
-        }
-      );
+      default = pkgs.jellyfin.overrideAttrs {
+        makeWrapperArgs = [
+          "--add-flags"
+          "--ffmpeg=${cfg.jellyfin-ffmpeg}/bin/ffmpeg"
+          "--add-flags"
+          "--webdir=${cfg.jellyfin-web}/share/jellyfin-web"
+        ];
+        patches = [../../remove-size-check.patch];
+      };
       defaultText = "pkgs.jellyfin";
       description = "Which package to use. Overrides `services.jellyfin.package`";
     };
 
     jellyfin-ffmpeg = mkOption {
       type = package;
-      default = let
-        lock = builtins.fromJSON (builtins.readFile ../../jellyfin-ffmpeg-lock.json);
-      in
-        pkgs.callPackage ../../jellyfin-ffmpeg.nix {
-          inherit (lock) version hash;
-        };
+      default = pkgs.jellyfin-ffmpeg;
       defaultText = "pkgs.jellyfin-ffmpeg";
       description = "Which jellyfin-ffmpeg package to use";
     };
 
     jellyfin-web = mkOption {
       type = package;
-      default = pkgs.jellyfin-web.overrideAttrs (
-        let
-          lock = builtins.fromJSON (builtins.readFile ../../jellyfin-web-lock.json);
-        in {
-          inherit (lock) version;
-          src = pkgs.fetchFromGitHub {
-            owner = "jellyfin";
-            repo = "jellyfin-web";
-            tag = "v${lock.version}";
-            inherit (lock) hash;
-          };
-        }
-      );
+      default = pkgs.jellyfin-web;
       defaultText = "pkgs.jellyfin-web";
       description = "Which jellyfin-web package to use";
     };

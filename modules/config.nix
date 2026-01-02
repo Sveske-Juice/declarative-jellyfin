@@ -5,6 +5,11 @@
   ...
 }:
 with lib; let
+  supportedVersions = [
+    "10.11.3"
+    "10.11.4"
+    "10.11.5"
+  ];
   cfg = config.services.declarative-jellyfin;
   genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
   djLib = import ../lib {nixpkgs = pkgs;};
@@ -572,5 +577,16 @@ in {
         ExecStop = "+/bin/sh -c 'rm -rf ${jellyfinDoneTag}'";
       };
     };
+    assertions = [
+      {
+        assertion = (builtins.elem cfg.package.version supportedVersions) || (builtins.elem cfg.jellyfin-web.version supportedVersions);
+        message = ''
+          Unsupported jellyfin/jellyfin-web version!
+          Supported versions:
+          ${toString supportedVersions}
+          Submit an issue to declarative-jellyfin to support version ${cfg.package.version}
+        '';
+      }
+    ];
   };
 }
