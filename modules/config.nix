@@ -9,6 +9,7 @@ with lib; let
     "10.11.3"
     "10.11.4"
     "10.11.5"
+    "10.11.6"
   ];
   cfg = config.services.declarative-jellyfin;
   genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
@@ -430,7 +431,7 @@ with lib; let
       # Server id
       ${
         lib.optionalString (cfg.serverId != null) # bash
-        
+
         ''
           install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/data/device.txt"
           echo -n "${cfg.serverId}" > "${config.services.jellyfin.dataDir}/data/device.txt"
