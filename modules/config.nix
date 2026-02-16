@@ -473,12 +473,12 @@ with lib; let
               touch "${path}/${value.ContentType}.collection"
               # Create .mblink files foreach path in library
               ${concatStringsSep "\n" (
-                map (
-                  pathInfo:
+                imap0 (
+                  index: pathInfo:
                   # bash
                   ''
-                    install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
-                    echo -n "${pathInfo.MediaPathInfo.Path}" > "${config.services.jellyfin.dataDir}/root/default/${name}/${baseNameOf pathInfo.MediaPathInfo.Path}.mblink"
+                    install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/root/default/${name}/${toString index}.mblink"
+                    echo -n "${pathInfo.MediaPathInfo.Path}" > "${config.services.jellyfin.dataDir}/root/default/${name}/${toString index}.mblink"
                   ''
                 )
                 value.PathInfos
