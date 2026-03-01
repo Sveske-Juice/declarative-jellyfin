@@ -349,7 +349,6 @@ with lib; let
         trap "rm -rf \"$dbcmds\"" exit
         echo "BEGIN TRANSACTION;" > "$dbcmds"
 
-
           # Install each config
           ${concatStringsSep "\n" (
         mapAttrsToList (
@@ -358,48 +357,43 @@ with lib; let
         configDerivations
       )}
 
-          ${
-        lib.optionalString cfg.system.isStartupWizardCompleted
-        # bash
-        ''
-          # Run jellyfin once to run potential migrations
-          echo "Running jellyfin once to ensure migrations are ran"
-          echo "Starting jellyfin with IsStartupWizardCompleted = false"
-          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
-          ${jellyfin-exec} & disown
-          echo "Waiting for jellyfin to finish starting"
-          until ${lib.getExe pkgs.curl} "http://localhost:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
-          do
-            sleep 1
-          done
-          sleep 15
-          echo "Migrations ran! Restarting jellyfin..."
-          ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
-          echo "Waiting for jellyfin to shut down properly"
-          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
-          echo "Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true"
-          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "true" "${config.services.jellyfin.configDir}/system.xml"
-        ''
-      }
-
-        # Make sure there is a database
-        if [ ! -e "${config.services.jellyfin.dataDir}/data/${dbname}" ]; then
-          ${print "No DB found. First time run detected. Launching jellyfin once to generate initial config + DB..."}
-          ${jellyfin-exec} & disown
-
-          ${print "Waiting for jellyfin finish startup"}
-          until [ -f "${config.services.jellyfin.dataDir}/data/${dbname}" ]
-          do
-            sleep 1
-          done
-          sleep 5
-          ${print "Initial jellyfin setup done"}
-          ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
-          ${print "Waiting for jellyfin to shut down properly"}
-          while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
-          cat "${config.services.jellyfin.configDir}/migrations.xml"
-          ${print "Jellyfin terminated"}
-        fi
+      if [ -e "${config.services.jellyfin.dataDir}/data/${dbname}" ]; then
+        # If there has been an update to jellyfin we must run it once,
+        # before we tamper with the DB, to make sure any migrations have
+        # been run
+        ${print "Running jellyfin once for potential migrations."}
+        ${jellyfin-exec} --nowebclient & disown
+        ${print "Waiting for jellyfin to finish starting"}
+        until ${lib.getExe pkgs.curl} "http://localhost:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
+        do
+        sleep 1
+        done
+        sleep 15
+        ${print "Migrations ran! Restarting jellyfin..."}
+        ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
+        ${print "Waiting for jellyfin to shut down properly"}
+        while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
+      else
+        # If this is the first time run, we must run jellyfin
+        # once with the startup wizard so the DB is set up properly.
+        # Otherwise automatic migrations from first time launch will
+        # fail. Don't ask me why this is required but ask the JF devs
+        ${print "First time run. Running Jellyfin with IsStartupWizardCompleted=false"}
+        ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "false" "${config.services.jellyfin.configDir}/system.xml"
+        ${jellyfin-exec} --nowebclient & disown
+        ${print "Waiting for jellyfin to finish starting"}
+        until ${lib.getExe pkgs.curl} "http://localhost:${toString config.services.declarative-jellyfin.network.internalHttpPort}";
+        do
+        sleep 1
+        done
+        sleep 15
+        ${print "Migrations ran! Restarting jellyfin..."}
+        ${pkgs.procps}/bin/pkill -15 -f ${cfg.package}
+        ${print "Waiting for jellyfin to shut down properly"}
+        while ${pkgs.ps}/bin/ps axg | ${pkgs.gnugrep}/bin/grep -vw grep | ${pkgs.gnugrep}/bin/grep -w ${cfg.package} > /dev/null; do sleep 1 && printf "."; done
+        ${print "Jellyfin terminated. Resetting with IsStartupWizardCompleted set to true"}
+        ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//IsStartupWizardCompleted" -v "true" "${config.services.jellyfin.configDir}/system.xml"
+      fi
 
       # Rotating backups
       ${
@@ -431,7 +425,7 @@ with lib; let
       # Server id
       ${
         lib.optionalString (cfg.serverId != null) # bash
-
+        
         ''
           install -Dm 740 /dev/null "${config.services.jellyfin.dataDir}/data/device.txt"
           echo -n "${cfg.serverId}" > "${config.services.jellyfin.dataDir}/data/device.txt"
