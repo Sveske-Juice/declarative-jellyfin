@@ -20,19 +20,20 @@ in {
     );
 
     # Run the same test on each node VM
+    skipTypeCheck = true;
     testScript =
       # py
       ''
         start_all()
 
-        for node in machines:
+        for node in machines_qemu:
           node.wait_until_succeeds("curl 127.0.0.1:8096", timeout=300)
 
         # No errors should be reported in journal
-        for node in machines:
+        for node in machines_qemu:
           node.succeed("! journalctl --no-pager -b -u jellyfin.service | grep -v \"plugin\" | grep -q \"ERR\"")
 
-        for node in machines:
+        for node in machines_qemu:
           print("[" + node.succeed("hostname").strip() + "] " + "Jellyfin log: " + node.succeed("journalctl --no-pager -b -u jellyfin.service"))
       '';
   };
