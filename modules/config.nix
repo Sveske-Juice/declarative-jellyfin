@@ -65,7 +65,7 @@ with lib; let
     };
     content = prepass x;
   });
-  log = "/var/log/jellyfin.txt";
+  log = "${cfg.logDir}/jellyfin-init.txt";
   print = msg: ''echo "${msg}" | tee --append ${log}'';
 
   # `LiveTvOptions` contains lists of complex objects (`TunerHosts`,
@@ -399,6 +399,12 @@ with lib; let
     ''
         set -euo pipefail
         rm -rf "${jellyfinDoneTag}"
+
+        function handle_error() {
+          ${print "An ERROR occured during jellyfin-init!"}
+          ${print "Log file:\n$(cat \"${log}\")"}
+        }
+
         trap handle_error ERR
 
         # u=rwx
@@ -407,11 +413,6 @@ with lib; let
         umask 027
 
         ${print "Log init"}
-
-        function handle_error() {
-          ${print "An ERROR occured during jellyfin-init!"}
-          ${print "Log file:\n$(cat \"${log}\")"}
-        }
 
         dbcmds="$(mktemp -d)/${dbcmdfile}"
         touch "$dbcmds"
