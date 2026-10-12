@@ -54,7 +54,7 @@ in {
         # Give jellyfin time to stop
         normal.succeed("sleep 10")
 
-        normal.copy_from_vm("/var/lib/jellyfin/", "jellyfin/")
+        normal.copy_from_machine("/var/lib/jellyfin/", "jellyfin/")
 
         declarative.copy_from_host(str(driver.out_dir.joinpath("jellyfin/jellyfin/")), "/var/lib/jellyfin")
 

@@ -14,6 +14,9 @@ with lib; let
     "10.11.8"
     "10.11.10"
     "10.11.11"
+    "12.0"
+    "12.1"
+    "12.2"
   ];
   cfg = config.services.declarative-jellyfin;
   genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
@@ -346,13 +349,21 @@ with lib; let
           permission: enabled:
           # bash
           ''
-            sql="REPLACE INTO Permissions (Kind, Value, UserId, Permission_Permissions_Guid, RowVersion) VALUES(${
+            sql="REPLACE INTO Permissions (Kind, Value, UserId,${
+              if lib.versionOlder cfg.package.version "12"
+              then " Permission_Permissions_Guid,"
+              else ""
+            } RowVersion) VALUES(${
               toString permissionKindToDBInteger.${permission}
             }, ${
               if enabled
               then "1"
               else "0"
-            }, $(echo "'$userId'"), NULL, 0);"
+            }, $(echo "'$userId'"),${
+              if lib.versionOlder cfg.package.version "12"
+              then " NULL,"
+              else ""
+            } 0);"
             echo "$sql" >> "$dbcmds"
           ''
         )
