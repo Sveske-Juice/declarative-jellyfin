@@ -1,7 +1,7 @@
 {
   description = "Declarative jellyfin with more options";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=482bf14a06e7b19c7138236c0301f14d416850dd";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=6c295847c91602eda1358c5a240d69674e6841af";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
