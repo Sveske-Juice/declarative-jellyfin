@@ -17,6 +17,8 @@ with lib; let
     "12.0"
     "12.1"
     "12.2"
+    "12.3"
+    "12.4"
   ];
   cfg = config.services.declarative-jellyfin;
   genhash = import ./pbkdf2-sha512.nix {inherit pkgs;};
